@@ -12,6 +12,8 @@ plugins {
 
     id("org.jlleitschuh.gradle.ktlint") version "10.3.0"
 
+    id("com.github.davidmc24.gradle.plugin.avro") version "1.5.0"
+
     // Apply the application plugin to add support for building a CLI application in Java.
     application
 }
@@ -46,6 +48,8 @@ dependencies {
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:31.0.1-jre")
+
+    implementation("org.apache.avro:avro:1.11.0")
 
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
