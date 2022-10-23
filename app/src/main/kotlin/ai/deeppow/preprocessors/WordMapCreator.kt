@@ -1,4 +1,4 @@
-package ai.deeppow
+package ai.deeppow.preprocessors
 
 import ai.deeppow.models.WordTree
 import org.apache.avro.file.DataFileWriter
@@ -36,7 +36,7 @@ private fun File.addToTree(wordTree: WordTree) {
     }
 }
 
-private fun String.isFiveLetterWord(): Boolean  = count() == 5 && all { it.isLetter() }
+private fun String.isFiveLetterWord(): Boolean = count() == 5 && all { it.isLetter() }
 
 private fun WordTree.writeToAvro(resourcesPath: String) {
     val schema = ReflectData.get().getSchema(WordTree::class.java)
