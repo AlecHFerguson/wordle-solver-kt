@@ -16,6 +16,22 @@ plugins {
     application
 }
 
+buildscript {
+    repositories {
+        maven("https://plugins.gradle.org/m2/")
+    }
+    dependencies {
+        classpath("org.jlleitschuh.gradle:ktlint-gradle:<current_version>")
+    }
+}
+
+repositories {
+    // Required to download KtLint
+    mavenCentral()
+}
+
+apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -33,9 +49,6 @@ dependencies {
 
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-
-    // Use the Kotlin JUnit integration.
-//    testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 
 application {

@@ -50,7 +50,7 @@ data class WordTree internal constructor(
         }
     }
 
-    fun getWord(word: String) : WordNode? {
+    fun getWord(word: String): WordNode? {
         val characters = word.toCharArray()
         val firstCharacter = characters.firstOrNull()
         if (firstCharacter != null) {

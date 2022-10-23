@@ -20,5 +20,4 @@ data class WordMapCollector(
 }
 
 fun main() {
-
 }
