@@ -34,4 +34,29 @@ internal class WordTreeTest {
         )
         )
     }
+
+    @Test
+    fun testAddTwoWords() {
+        val wordTree = WordTree()
+        wordTree.addWord("ski")
+        wordTree.addWord("skier")
+
+        assertEquals(wordTree.getWord("ski"), WordNode(wordSoFar = "ski", isLeafWord = true, nextWords = mutableMapOf(
+            Pair("e".single(), WordNode(
+                isLeafWord = false,
+                wordSoFar = "skie",
+                nextWords = mutableMapOf(
+                    Pair("r".single(), WordNode(
+                        isLeafWord = true,
+                        wordSoFar = "skier",
+                    )
+                    )
+                )
+            )
+            )
+        )))
+
+        assertEquals(wordTree.getWord("skier"), WordNode(wordSoFar = "skier", isLeafWord = true))
+        assertEquals(wordTree.getWord("skiing"), null)
+    }
 }
