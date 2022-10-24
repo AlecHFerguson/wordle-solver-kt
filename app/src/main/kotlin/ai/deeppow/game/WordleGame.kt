@@ -6,8 +6,6 @@ object OtherSlot : Truthiness
 object NotPresent : Truthiness
 
 class WordleGame(word: String) {
-    private val wordleMap = word.toWordMap()
-
     fun makeGuess(word: String): GuessResults {
         if (word.count() != 5) {
             throw IllegalArgumentException("Word must be 5 letters: $word")
@@ -26,7 +24,8 @@ class WordleGame(word: String) {
     }
 
     private fun evaluateGuess(word: String): GuessResults {
-        val guessResults = word.toCharArray().mapIndexed { index, char -> evaluateChar(index, char) }
+        val wordleMap = word.toWordMap()
+        val guessResults = word.toCharArray().mapIndexed { index, char -> evaluateChar(index, char, wordleMap) }
         return GuessResults(
             guess = word,
             letters = guessResults,
@@ -34,7 +33,7 @@ class WordleGame(word: String) {
         )
     }
 
-    private fun evaluateChar(index: Int, char: Char): GuessResult {
+    private fun evaluateChar(index: Int, char: Char, wordleMap: Map<Char, MutableList<Int>>): GuessResult {
         val foundCharIndices = wordleMap[char] ?: return GuessResult(
             letter = char,
             guessIndex = index,
