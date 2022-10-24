@@ -4,13 +4,13 @@ import org.apache.avro.file.DataFileReader
 import org.apache.avro.reflect.ReflectDatumReader
 import java.io.File
 
-const val wordTreeFile = "word-tree.avro"
+const val wordTreeFile = "/word-tree.avro"
 
 data class WordNode(
-    val character: Char,
-    val wordSoFar: String,
-    val isLeafWord: Boolean,
-    val nextWords: MutableMap<Char, WordNode> = mutableMapOf(),
+    val character: Char = "X".single(),
+    val wordSoFar: String = "",
+    val isLeafWord: Boolean = false,
+    val nextWords: LinkedHashMap<Char, WordNode> = LinkedHashMap(),
 ) {
     fun addChars(chars: List<Char>, wordSoFar: String) {
         val key = chars.firstOrNull()
@@ -39,7 +39,7 @@ data class WordNode(
     }
 }
 
-data class WordTree internal constructor(val wordMap: MutableMap<Char, WordNode> = mutableMapOf()) {
+data class WordTree internal constructor(val wordMap: LinkedHashMap<Char, WordNode> = LinkedHashMap()) {
     fun addWord(word: String) {
         val characters = word.toCharArray()
         val firstCharacter = characters.firstOrNull()

@@ -13,10 +13,10 @@ data class GuessAnalysis(
 )
 
 class WordlePlayer(private val wordTree: WordTree) {
+    private val letterMap: Map<Int, MutableList<Char>> = initLetterMap()
     private var availableGuesses: List<String> = wordTree.getAvailableGuesses()
-    private val letterMap = initLetterMap()
     val guesses = mutableListOf<GuessAnalysis>()
-    var solved: Boolean = false
+    var solved = true
 
     fun makeGuess(word: String, wordleGame: WordleGame): WordlePlayer {
         if (wordTree.getWord(word) == null) {

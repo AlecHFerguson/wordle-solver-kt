@@ -3,9 +3,9 @@ package ai.deeppow.preprocessors
 import ai.deeppow.game.GuessSequence
 import ai.deeppow.game.WordleGame
 import ai.deeppow.game.WordlePlayer
+import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
-import ai.deeppow.models.getWordTree
 
 object GenerateBestGuess {
     fun play(word: String) {
@@ -30,7 +30,9 @@ object GenerateBestGuess {
                 guessSequences.add(GuessSequence(guesses = player.guesses, solved = player.solved))
             }
             player.getAvailableGuesses().forEach { guess ->
-                guessSequences.flatMap { guess.playWordle(wordTree = wordTree, game = game, player = player) }
+                guessSequences.addAll(
+                    guess.playWordle(wordTree = wordTree, game = game, player = player)
+                )
             }
         }
         return guessSequences
