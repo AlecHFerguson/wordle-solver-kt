@@ -13,9 +13,21 @@ data class GuessAnalysis(
     val availableGuesses: List<String>
 )
 
-class WordlePlayer(private val wordTree: WordTree) {
-    private val letterMap: Map<Int, MutableList<Char>> = initLetterMap()
-    private var availableGuesses: List<String> = wordTree.getAvailableGuesses()
+data class LettersForSlot(var letters: MutableMap<Char, Boolean> = mutableMapOf(*('a'..'z').map { Pair(it, true) }.toTypedArray())) {
+    fun setExclusive(char: Char) {
+        letters = mutableMapOf(Pair(char, true))
+    }
+
+    fun remove(char: Char) {
+        letters.remove(char)
+    }
+
+    fun contains(char: Char): Boolean = letters.contains(char)
+}
+
+class WordlePlayer(private val wordTree: WordTree, allWords: List<String>? = null) {
+    private val letterMap: Map<Int, LettersForSlot> = initLetterMap()
+    private var availableGuesses: List<String> = allWords ?: wordTree.getAvailableGuesses()
     val guesses = mutableListOf<GuessAnalysis>()
     var solved = true
 
@@ -26,10 +38,10 @@ class WordlePlayer(private val wordTree: WordTree) {
         val guessResults = wordleGame.makeGuess(word)
         for (letter in guessResults.letters) {
             when (letter.result) {
-                is Correct -> letterMap[letter.guessIndex]!!.removeIf { it != letter.letter }
-                is OtherSlot -> letterMap[letter.guessIndex]!!.removeIf { it == letter.letter }
+                is Correct -> letterMap[letter.guessIndex]!!.setExclusive(letter.letter)
+                is OtherSlot -> letterMap[letter.guessIndex]!!.remove(letter.letter)
                 is NotPresent -> letterMap.values.forEach { charList ->
-                    charList.removeIf { it == letter.letter }
+                    charList.remove(letter.letter)
                 }
             }
         }
@@ -53,10 +65,10 @@ class WordlePlayer(private val wordTree: WordTree) {
         )
     }
 
-    private fun initLetterMap(): Map<Int, MutableList<Char>> {
-        val map = mutableMapOf<Int, MutableList<Char>>()
+    private fun initLetterMap(): Map<Int, LettersForSlot> {
+        val map = mutableMapOf<Int, LettersForSlot>()
         (0..4).forEach {
-            map[it] = ('a'..'z').toMutableList()
+            map[it] = LettersForSlot()
         }
         return map
     }
@@ -72,12 +84,8 @@ class WordlePlayer(private val wordTree: WordTree) {
             if (isLeafWord) {
                 availableGuesses.add(wordSoFar)
             }
-            val nextLetterIndex = letterIndex + 1
-            val nextAvailableLetters = letterMap[nextLetterIndex] ?: return availableGuesses
             nextWords.forEach { (_, node) ->
-                if (nextAvailableLetters.contains(node.character)) {
-                    availableGuesses.addAll(node.getAvailableGuesses(nextLetterIndex))
-                }
+                availableGuesses.addAll(node.getAvailableGuesses(letterIndex + 1))
             }
         }
         return availableGuesses

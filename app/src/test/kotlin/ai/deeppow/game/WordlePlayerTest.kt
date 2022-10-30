@@ -1,6 +1,7 @@
 package ai.deeppow.game
 
 import ai.deeppow.models.GetTree.getWordTree
+import ai.deeppow.models.getAllWords
 import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,12 +23,15 @@ class WordlePlayerTest {
     @Test
     fun benchmarkPlay() {
         val wordTree = getWordTree()
+        val allWords = wordTree.getAllWords()
         val game = WordleGame("power")
 
         val time = measureTimeMillis {
-            val player = WordlePlayer(wordTree)
-            player.makeGuess("soapy", game)
+            repeat(1000) {
+                val player = WordlePlayer(wordTree, allWords)
+                player.makeGuess("soapy", game)
+            }
         }
-        assertTrue { time < 10 }
+        assertTrue { time < 769 }
     }
 }
