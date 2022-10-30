@@ -8,28 +8,34 @@ internal class WordTreeTest {
     fun testAddWord() {
         val wordTree = WordTree()
         wordTree.addWord("ski")
-        assertEquals(
-            wordTree,
-            WordTree(
-                wordMap = mutableMapOf(
+
+        val expected = WordTree(
+            wordMap = LinkedHashMap(
+                mutableMapOf(
                     Pair(
                         "s".single(),
                         WordNode(
+                            character = "s".single(),
                             wordSoFar = "s",
                             isLeafWord = false,
-                            nextWords = mutableMapOf(
-                                Pair(
-                                    "k".single(),
-                                    WordNode(
-                                        wordSoFar = "sk",
-                                        isLeafWord = false,
-                                        nextWords = mutableMapOf(
-                                            Pair(
-                                                "i".single(),
-                                                WordNode(
-                                                    wordSoFar = "ski",
-                                                    isLeafWord = true,
-                                                    nextWords = mutableMapOf()
+                            nextWords = LinkedHashMap(
+                                mutableMapOf(
+                                    Pair(
+                                        "k".single(),
+                                        WordNode(
+                                            character = "k".single(),
+                                            wordSoFar = "sk",
+                                            isLeafWord = false,
+                                            nextWords = LinkedHashMap(
+                                                mutableMapOf(
+                                                    Pair(
+                                                        "i".single(),
+                                                        WordNode(
+                                                            character = "i".single(),
+                                                            wordSoFar = "ski",
+                                                            isLeafWord = true,
+                                                        )
+                                                    )
                                                 )
                                             )
                                         )
@@ -41,6 +47,7 @@ internal class WordTreeTest {
                 )
             )
         )
+        assertEquals(expected, wordTree,)
     }
 
     @Test
@@ -50,31 +57,38 @@ internal class WordTreeTest {
         wordTree.addWord("skier")
 
         assertEquals(
-            wordTree.getWord("ski"),
             WordNode(
+                character = "i".single(),
                 wordSoFar = "ski", isLeafWord = true,
-                nextWords = mutableMapOf(
-                    Pair(
-                        "e".single(),
-                        WordNode(
-                            isLeafWord = false,
-                            wordSoFar = "skie",
-                            nextWords = mutableMapOf(
-                                Pair(
-                                    "r".single(),
-                                    WordNode(
-                                        isLeafWord = true,
-                                        wordSoFar = "skier",
+                nextWords = LinkedHashMap(
+                    mutableMapOf(
+                        Pair(
+                            "e".single(),
+                            WordNode(
+                                character = "e".single(),
+                                isLeafWord = false,
+                                wordSoFar = "skie",
+                                nextWords = LinkedHashMap(
+                                    mutableMapOf(
+                                        Pair(
+                                            "r".single(),
+                                            WordNode(
+                                                character = "r".single(),
+                                                isLeafWord = true,
+                                                wordSoFar = "skier",
+                                            )
+                                        )
                                     )
                                 )
                             )
                         )
                     )
                 )
-            )
+            ),
+            wordTree.getWord("ski"),
         )
 
-        assertEquals(wordTree.getWord("skier"), WordNode(wordSoFar = "skier", isLeafWord = true))
+        assertEquals(wordTree.getWord("skier"), WordNode(character = "r".single(), wordSoFar = "skier", isLeafWord = true))
         assertEquals(wordTree.getWord("skiing"), null)
     }
 }

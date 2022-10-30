@@ -5,8 +5,8 @@ object Correct : Truthiness
 object OtherSlot : Truthiness
 object NotPresent : Truthiness
 
-class WordleGame(word: String) {
-    fun makeGuess(word: String): GuessResults {
+class WordleGame(private val theWord: String) {
+    fun makeGuess(word: String): GuessResult {
         if (word.count() != 5) {
             throw IllegalArgumentException("Word must be 5 letters: $word")
         }
@@ -23,31 +23,31 @@ class WordleGame(word: String) {
         return wordMap
     }
 
-    private fun evaluateGuess(word: String): GuessResults {
-        val wordleMap = word.toWordMap()
+    private fun evaluateGuess(word: String): GuessResult {
+        val wordleMap = theWord.toWordMap()
         val guessResults = word.toCharArray().mapIndexed { index, char -> evaluateChar(index, char, wordleMap) }
-        return GuessResults(
+        return GuessResult(
             guess = word,
             letters = guessResults,
             solved = guessResults.all { it.result is Correct }
         )
     }
 
-    private fun evaluateChar(index: Int, char: Char, wordleMap: Map<Char, MutableList<Int>>): GuessResult {
-        val foundCharIndices = wordleMap[char] ?: return GuessResult(
+    private fun evaluateChar(index: Int, char: Char, wordleMap: Map<Char, MutableList<Int>>): CharacterResult {
+        val foundCharIndices = wordleMap[char] ?: return CharacterResult(
             letter = char,
             guessIndex = index,
             result = NotPresent
         )
         if (foundCharIndices.contains(index)) {
             foundCharIndices.remove(index)
-            return GuessResult(
+            return CharacterResult(
                 letter = char,
                 guessIndex = index,
                 result = Correct
             )
         }
-        return GuessResult(
+        return CharacterResult(
             letter = char,
             guessIndex = index,
             result = OtherSlot
@@ -55,14 +55,14 @@ class WordleGame(word: String) {
     }
 }
 
-data class GuessResult(
+data class CharacterResult(
     val letter: Char,
     val guessIndex: Int,
     val result: Truthiness
 )
 
-data class GuessResults(
+data class GuessResult(
     val guess: String,
-    val letters: List<GuessResult>,
+    val letters: List<CharacterResult>,
     val solved: Boolean
 )
