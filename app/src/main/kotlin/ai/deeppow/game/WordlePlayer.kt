@@ -13,8 +13,20 @@ data class GuessAnalysis(
     val availableGuesses: List<String>
 )
 
+data class LettersForSlot(var letters: MutableMap<Char, Boolean> = mutableMapOf(*('a'..'z').map { Pair(it, true) }.toTypedArray())) {
+    fun setExclusive(char: Char) {
+        letters = mutableMapOf(Pair(char, true))
+    }
+
+    fun remove(char: Char) {
+        letters.remove(char)
+    }
+
+    fun contains(char: Char): Boolean = letters.contains(char)
+}
+
 class WordlePlayer(private val wordTree: WordTree) {
-    private val letterMap: Map<Int, MutableList<Char>> = initLetterMap()
+    private val letterMap: Map<Int, LettersForSlot> = initLetterMap()
     private var availableGuesses: List<String> = wordTree.getAvailableGuesses()
     val guesses = mutableListOf<GuessAnalysis>()
     var solved = true
@@ -26,10 +38,10 @@ class WordlePlayer(private val wordTree: WordTree) {
         val guessResults = wordleGame.makeGuess(word)
         for (letter in guessResults.letters) {
             when (letter.result) {
-                is Correct -> letterMap[letter.guessIndex]!!.removeIf { it != letter.letter }
-                is OtherSlot -> letterMap[letter.guessIndex]!!.removeIf { it == letter.letter }
+                is Correct -> letterMap[letter.guessIndex]!!.setExclusive(letter.letter)
+                is OtherSlot -> letterMap[letter.guessIndex]!!.remove(letter.letter)
                 is NotPresent -> letterMap.values.forEach { charList ->
-                    charList.removeIf { it == letter.letter }
+                    charList.remove(letter.letter)
                 }
             }
         }
@@ -53,10 +65,10 @@ class WordlePlayer(private val wordTree: WordTree) {
         )
     }
 
-    private fun initLetterMap(): Map<Int, MutableList<Char>> {
-        val map = mutableMapOf<Int, MutableList<Char>>()
+    private fun initLetterMap(): Map<Int, LettersForSlot> {
+        val map = mutableMapOf<Int, LettersForSlot>()
         (0..4).forEach {
-            map[it] = ('a'..'z').toMutableList()
+            map[it] = LettersForSlot()
         }
         return map
     }

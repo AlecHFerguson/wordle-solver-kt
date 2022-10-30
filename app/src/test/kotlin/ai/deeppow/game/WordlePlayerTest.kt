@@ -25,9 +25,18 @@ class WordlePlayerTest {
         val game = WordleGame("power")
 
         val time = measureTimeMillis {
-            val player = WordlePlayer(wordTree)
-            player.makeGuess("soapy", game)
+            repeat(100) {
+                val player = WordlePlayer(wordTree)
+                player.makeGuess("soapy", game)
+            }
         }
+        assertTrue { time < 169 }
+    }
+
+    @Test
+    fun benchmarkWordTree() {
+        getWordTree()
+        val time = measureTimeMillis { getWordTree() }
         assertTrue { time < 10 }
     }
 }
