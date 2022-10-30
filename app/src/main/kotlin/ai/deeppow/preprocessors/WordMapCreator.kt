@@ -1,11 +1,8 @@
 package ai.deeppow.preprocessors
 
+import ai.deeppow.io.Avro.writeToAvro
 import ai.deeppow.models.WordTree
-import org.apache.avro.file.DataFileWriter
-import org.apache.avro.reflect.ReflectData
-import org.apache.avro.reflect.ReflectDatumWriter
 import java.io.File
-import java.nio.file.Paths
 
 private val wordsFileRegex = Regex("-words.[0-9]+$")
 
@@ -20,7 +17,7 @@ fun main() {
             file.addToTree(wordTree)
         }
     }
-    wordTree.writeToAvro(resourcesPath)
+    wordTree.writeToAvro(resourcesPath = resourcesPath, fileName = "word-tree.avro")
 }
 
 private fun File.shouldInclude(): Boolean {
@@ -37,13 +34,3 @@ private fun File.addToTree(wordTree: WordTree) {
 }
 
 private fun String.isFiveLetterWord(): Boolean = count() == 5 && all { it.isLetter() }
-
-private fun WordTree.writeToAvro(resourcesPath: String) {
-    val schema = ReflectData.get().getSchema(WordTree::class.java)
-    val writer = ReflectDatumWriter(WordTree::class.java)
-    val dataFileWriter = DataFileWriter(writer)
-    val wordTreeAvroPath = Paths.get(resourcesPath).toUri().resolve("./word-tree.avro")
-    dataFileWriter.create(schema, File(wordTreeAvroPath))
-    dataFileWriter.append(this)
-    dataFileWriter.close()
-}

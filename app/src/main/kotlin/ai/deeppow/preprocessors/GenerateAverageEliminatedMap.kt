@@ -2,12 +2,14 @@ package ai.deeppow.preprocessors
 
 import ai.deeppow.game.WordleGame
 import ai.deeppow.game.WordlePlayer
+import ai.deeppow.io.Avro.writeToAvro
 import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.GetTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.system.measureTimeMillis
 
 fun main() {
     GenerateAverageEliminatedMap.run()
@@ -15,17 +17,23 @@ fun main() {
 
 object GenerateAverageEliminatedMap {
     fun run() {
+        val resourcesPath = "/Users/alecferguson/git-repos/wordle-solver-kt/app/src/main/resources"
+
         val wordTree = GetTree.getWordTree()
 
-        val averageEliminateds: List<Pair<String, Double>> = runBlocking {
-            testForAllWords(wordTree = wordTree)
-        }.sortedByDescending { it.second }
-        val wordMap = AverageEliminated(words = LinkedHashMap(mutableMapOf(*averageEliminateds.toTypedArray())))
-        println("Done-zo: ${wordMap.get("snowy")}")
+        val time = measureTimeMillis {
+            val averageEliminateds: List<Pair<String, Double>> = runBlocking {
+                testForAllWords(wordTree = wordTree)
+            }.sortedByDescending { it.second }
+            val averageEliminated = AverageEliminated(words = LinkedHashMap(mutableMapOf(*averageEliminateds.toTypedArray())))
+            averageEliminated.writeToAvro(resourcesPath = resourcesPath, fileName = "average-eliminated.avro")
+            println("Done-zo: ${averageEliminated.get("abbey")}")
+        }
+        println("Took $time ms")
     }
 
     private suspend fun testForAllWords(wordTree: WordTree): List<Pair<String, Double>> {
-        val wordList = wordTree.getAllWords().take(1000)
+        val wordList = wordTree.getAllWords() //.take(69)
 
         return coroutineScope {
             wordList.map { guessWord ->
