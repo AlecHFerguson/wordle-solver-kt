@@ -23,11 +23,11 @@ class WordleGame(private val theWord: String) {
         return wordMap
     }
 
-    private fun evaluateGuess(word: String): GuessResult {
+    private fun evaluateGuess(guessWord: String): GuessResult {
         val wordleMap = theWord.toWordMap()
-        val guessResults = word.toCharArray().mapIndexed { index, char -> evaluateChar(index, char, wordleMap) }
+        val guessResults = guessWord.toCharArray().mapIndexed { index, char -> evaluateChar(index, char, wordleMap) }
         return GuessResult(
-            guess = word,
+            guess = guessWord,
             letters = guessResults,
             solved = guessResults.all { it.result is Correct }
         )
