@@ -25,7 +25,7 @@ object GenerateAverageEliminatedMap {
     }
 
     private suspend fun testForAllWords(wordTree: WordTree): List<Pair<String, Double>> {
-        val wordList = wordTree.getAllWords()
+        val wordList = wordTree.getAllWords().take(1000)
 
         return coroutineScope {
             wordList.map { guessWord ->
@@ -35,19 +35,19 @@ object GenerateAverageEliminatedMap {
     }
 
     private suspend fun testAllForWord(scope: CoroutineScope, guessWord: String, wordList: List<String>, wordTree: WordTree): Pair<String, Double> {
-//        return coroutineScope {
         val runningTotal = AtomicInteger(0)
         val recordCount = AtomicInteger(0)
         wordList.map { gameWord ->
             scope.launch {
-                val player = WordlePlayer(wordTree = wordTree)
+                val player = WordlePlayer(wordTree = wordTree, allWords = wordList)
                 val wordleGame = WordleGame(gameWord)
                 player.makeGuess(word = guessWord, wordleGame = wordleGame)
                 runningTotal.addAndGet(player.guesses.first().eliminatedCount)
                 recordCount.incrementAndGet()
             }
         }.joinAll()
-        return guessWord to (runningTotal.get().toDouble() / recordCount.get())
-//        }
+        val avg = (runningTotal.get().toDouble() / recordCount.get())
+        println("$guessWord => $avg")
+        return guessWord to avg
     }
 }
