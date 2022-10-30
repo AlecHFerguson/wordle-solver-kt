@@ -25,9 +25,9 @@ data class LettersForSlot(var letters: MutableMap<Char, Boolean> = mutableMapOf(
     fun contains(char: Char): Boolean = letters.contains(char)
 }
 
-class WordlePlayer(private val wordTree: WordTree) {
+class WordlePlayer(private val wordTree: WordTree, allWords: List<String>? = null) {
     private val letterMap: Map<Int, LettersForSlot> = initLetterMap()
-    private var availableGuesses: List<String> = wordTree.getAvailableGuesses()
+    private var availableGuesses: List<String> = allWords ?: wordTree.getAvailableGuesses()
     val guesses = mutableListOf<GuessAnalysis>()
     var solved = true
 
@@ -84,12 +84,8 @@ class WordlePlayer(private val wordTree: WordTree) {
             if (isLeafWord) {
                 availableGuesses.add(wordSoFar)
             }
-            val nextLetterIndex = letterIndex + 1
-            val nextAvailableLetters = letterMap[nextLetterIndex] ?: return availableGuesses
             nextWords.forEach { (_, node) ->
-                if (nextAvailableLetters.contains(node.character)) {
-                    availableGuesses.addAll(node.getAvailableGuesses(nextLetterIndex))
-                }
+                availableGuesses.addAll(node.getAvailableGuesses(letterIndex + 1))
             }
         }
         return availableGuesses
