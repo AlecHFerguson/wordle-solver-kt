@@ -16,6 +16,8 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+
+
 }
 
 buildscript {
@@ -65,4 +67,9 @@ application {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+task(name = "generateAvgEliminated", type = JavaExec::class) {
+    classpath = sourceSets["main"].runtimeClasspath
+    main = "ai.deeppow.preprocessors.GenerateAverageEliminatedMap"
 }

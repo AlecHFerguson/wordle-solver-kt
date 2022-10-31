@@ -11,12 +11,9 @@ import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.measureTimeMillis
 
-fun main() {
-    GenerateAverageEliminatedMap.run()
-}
-
 object GenerateAverageEliminatedMap {
-    fun run() {
+    @JvmStatic
+    fun main(args: Array<String>) {
         val resourcesPath = "/Users/alecferguson/git-repos/wordle-solver-kt/app/src/main/resources"
 
         val wordTree = GetTree.getWordTree()
@@ -33,7 +30,7 @@ object GenerateAverageEliminatedMap {
     }
 
     private suspend fun testForAllWords(wordTree: WordTree): List<Pair<String, Double>> {
-        val wordList = wordTree.getAllWords() //.take(69)
+        val wordList = wordTree.getAllWords().take(169)
 
         return coroutineScope {
             wordList.map { guessWord ->
