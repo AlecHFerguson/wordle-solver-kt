@@ -8,7 +8,7 @@ import org.apache.beam.sdk.values.PCollectionView
 
 class CreateTestGuesses(private val wordTreeView: PCollectionView<WordTree>) : DoFn<Int, GuessCombo>() {
     @ProcessElement
-    fun processElement(@Element element: Int, context: ProcessContext) {
+    fun processElement(context: ProcessContext) {
         val wordTree: WordTree = context.sideInput(wordTreeView)
         val allWords = wordTree.getAllWords()
 

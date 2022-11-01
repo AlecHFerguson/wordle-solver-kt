@@ -12,3 +12,8 @@ data class WordsEliminated(
     val guessWord: String = "",
     val wordsEliminated: Int = 0
 ) : Serializable
+
+data class WordAverage(
+    val guessWord: String = "",
+    val averageEliminated: Double = Double.NaN
+) : Serializable

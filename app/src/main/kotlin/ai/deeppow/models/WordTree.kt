@@ -39,7 +39,7 @@ data class WordNode(
     }
 }
 
-data class WordTree internal constructor(val wordMap: LinkedHashMap<Char, WordNode> = LinkedHashMap()) {
+data class WordTree(val wordMap: LinkedHashMap<Char, WordNode> = LinkedHashMap()) {
     fun addWord(word: String) {
         val characters = word.toCharArray()
         val firstCharacter = characters.firstOrNull()
