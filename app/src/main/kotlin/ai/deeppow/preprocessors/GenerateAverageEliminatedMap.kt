@@ -22,7 +22,9 @@ object GenerateAverageEliminatedMap {
             val averageEliminateds: List<Pair<String, Double>> = runBlocking {
                 testForAllWords(wordTree = wordTree)
             }.sortedByDescending { it.second }
-            val averageEliminated = AverageEliminated(words = LinkedHashMap(mutableMapOf(*averageEliminateds.toTypedArray())))
+            val averageEliminated = AverageEliminated(
+                words = LinkedHashMap(mutableMapOf(*averageEliminateds.toTypedArray()))
+            )
             averageEliminated.writeToAvro(resourcesPath = resourcesPath, fileName = "average-eliminated.avro")
             println("Done-zo: ${averageEliminated.get("abbey")}")
         }
@@ -39,7 +41,12 @@ object GenerateAverageEliminatedMap {
         }
     }
 
-    private suspend fun testAllForWord(scope: CoroutineScope, guessWord: String, wordList: List<String>, wordTree: WordTree): Pair<String, Double> {
+    private suspend fun testAllForWord(
+        scope: CoroutineScope,
+        guessWord: String,
+        wordList: List<String>,
+        wordTree: WordTree
+    ): Pair<String, Double> {
         val runningTotal = AtomicInteger(0)
         val recordCount = AtomicInteger(0)
         wordList.map { gameWord ->

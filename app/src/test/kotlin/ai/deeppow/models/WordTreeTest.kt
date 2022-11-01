@@ -88,7 +88,10 @@ internal class WordTreeTest {
             wordTree.getWord("ski"),
         )
 
-        assertEquals(wordTree.getWord("skier"), WordNode(character = "r".single(), wordSoFar = "skier", isLeafWord = true))
+        assertEquals(
+            wordTree.getWord("skier"),
+            WordNode(character = "r".single(), wordSoFar = "skier", isLeafWord = true)
+        )
         assertEquals(wordTree.getWord("skiing"), null)
     }
 }

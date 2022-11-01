@@ -13,7 +13,9 @@ data class GuessAnalysis(
     val availableGuesses: List<String>
 )
 
-data class LettersForSlot(var letters: MutableMap<Char, Boolean> = mutableMapOf(*('a'..'z').map { Pair(it, true) }.toTypedArray())) {
+data class LettersForSlot(
+    var letters: MutableMap<Char, Boolean> = mutableMapOf(*('a'..'z').map { Pair(it, true) }.toTypedArray())
+) {
     fun setExclusive(char: Char) {
         letters = mutableMapOf(Pair(char, true))
     }

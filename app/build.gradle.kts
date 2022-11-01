@@ -16,8 +16,6 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
-
-
 }
 
 buildscript {
@@ -42,10 +40,14 @@ repositories {
 }
 
 dependencies {
+    val coroutinesVersion = "1.6.4"
+    val beamVersion = "2.42.0"
+
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
-    val coroutinesVersion = "1.6.4"
+    implementation("org.apache.beam:beam-sdks-java-core:$beamVersion")
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
     // Use the Kotlin JDK 8 standard library.
