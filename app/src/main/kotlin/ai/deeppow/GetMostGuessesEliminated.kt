@@ -24,7 +24,11 @@ fun main() {
     println(topGuesses)
 }
 
-private suspend fun testAllForWord(wordleGame: WordleGame, wordList: List<String>, wordTree: WordTree): List<GuessAnalysis> {
+private suspend fun testAllForWord(
+    wordleGame: WordleGame,
+    wordList: List<String>,
+    wordTree: WordTree
+): List<GuessAnalysis> {
     return coroutineScope {
         wordList.map { word ->
             async {

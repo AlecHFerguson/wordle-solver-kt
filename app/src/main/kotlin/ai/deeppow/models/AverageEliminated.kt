@@ -4,26 +4,27 @@ import org.apache.avro.file.DataFileReader
 import org.apache.avro.reflect.ReflectDatumReader
 import java.io.File
 
-data class AverageEliminated internal constructor(
-    private val words: LinkedHashMap<String, Double> = LinkedHashMap()
+data class AverageEliminated(
+    val words: MutableMap<String, Double> = mutableMapOf()
 ) {
     fun get(word: String): Double? {
         return words[word]
     }
+}
 
-    companion object Reader {
-        const val averageEliminatedFile = "/average-eliminated.avro"
+object Reader {
+    const val averageEliminatedFile = "/average-eliminated.avro"
 
-        fun read(): AverageEliminated {
-            val wordTreeResource = AverageEliminated::class.java.getResource(averageEliminatedFile)?.toURI() ?: throw IllegalArgumentException(
+    fun read(): AverageEliminated {
+        val wordTreeResource = AverageEliminated::class.java.getResource(averageEliminatedFile)?.toURI()
+            ?: throw IllegalArgumentException(
                 "$averageEliminatedFile not found in resources"
             )
-            val reader = ReflectDatumReader(AverageEliminated::class.java)
-            val fileReader = DataFileReader(File(wordTreeResource), reader)
-            while (fileReader.hasNext()) {
-                return fileReader.next()
-            }
-            throw IllegalArgumentException("No WordTree found in file $wordTreeFile")
+        val reader = ReflectDatumReader(AverageEliminated::class.java)
+        val fileReader = DataFileReader(File(wordTreeResource), reader)
+        while (fileReader.hasNext()) {
+            return fileReader.next()
         }
+        throw IllegalArgumentException("No WordTree found in file $wordTreeFile")
     }
 }

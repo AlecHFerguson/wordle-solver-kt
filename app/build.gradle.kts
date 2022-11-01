@@ -30,9 +30,17 @@ buildscript {
 repositories {
     // Required to download KtLint
     mavenCentral()
+
+    maven {
+        url = uri("https://packages.confluent.io/maven/")
+    }
 }
 
 apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+ktlint {
+    disabledRules.set(setOf("no-wildcard-imports"))
+}
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -47,6 +55,7 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
     implementation("org.apache.beam:beam-sdks-java-core:$beamVersion")
+    runtimeOnly("org.apache.beam:beam-runners-google-cloud-dataflow-java:$beamVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 
@@ -74,4 +83,17 @@ tasks.test {
 task(name = "generateAvgEliminated", type = JavaExec::class) {
     classpath = sourceSets["main"].runtimeClasspath
     main = "ai.deeppow.preprocessors.GenerateAverageEliminatedMap"
+}
+
+task(name = "CreateMostEliminatedPipeline", type = JavaExec::class) {
+    classpath = sourceSets["main"].runtimeClasspath
+    main = "ai.deeppow.pipelines.CreateMostEliminatedPipeline"
+    args = listOf(
+        "--runner=DataflowRunner",
+        "--project=api-project-177134456185",
+        "--region=us-central1",
+        "--templateLocation=gs://deeppow-dataflow-templates/templates/CreateMostEliminatedPipeline",
+        "--tempLocation=gs://deeppow-dataflow-templates/temp/CreateMostEliminatedPipeline",
+        "--stagingLocation=gs://deeppow-dataflow-templates/staging/CreateMostEliminatedPipeline"
+    )
 }

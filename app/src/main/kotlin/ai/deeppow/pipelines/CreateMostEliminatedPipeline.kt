@@ -1,17 +1,21 @@
 package ai.deeppow.pipelines
 
+import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.WordTree
 import ai.deeppow.pipelines.beam.Avro.fromAvroClass
 import ai.deeppow.pipelines.beam.Avro.toAvro
 import ai.deeppow.pipelines.beam.KPipe
 import ai.deeppow.pipelines.beam.Map.toKv
 import ai.deeppow.pipelines.beam.ParDoFunctions.parDo
+import ai.deeppow.pipelines.models.WordsEliminated
 import ai.deeppow.pipelines.options.CreateMostEliminatedOptions
-import ai.deeppow.pipelines.transforms.CombineCountsPerWord
-import ai.deeppow.pipelines.transforms.CombineWordsEliminatedMap
-import ai.deeppow.pipelines.transforms.CreateTestGuesses
-import ai.deeppow.pipelines.transforms.GetWordsEliminated
+import ai.deeppow.pipelines.transforms.*
+import org.apache.beam.sdk.coders.AvroCoder
+import org.apache.beam.sdk.coders.DoubleCoder
+import org.apache.beam.sdk.coders.KvCoder
+import org.apache.beam.sdk.coders.StringUtf8Coder
 import org.apache.beam.sdk.transforms.*
+import org.apache.beam.sdk.values.KV
 
 object CreateMostEliminatedPipeline {
     @JvmStatic
@@ -23,9 +27,6 @@ object CreateMostEliminatedPipeline {
 
         val wordTree = wordTreeCollection
             .apply(View.asSingleton())
-
-//        val wordList = wordTreeCollection.map("Create Word List") { it.getAllWords() }
-//            .apply(View.asSingleton())
 
         pipeline
             .apply("Create Dummy Collection", Create.of(listOf(69)))
@@ -40,8 +41,13 @@ object CreateMostEliminatedPipeline {
                 sideInputs = wordTree
             )
             .toKv(name = "KV by guessWord") { it.guessWord }
-            .apply("Count Eliminated Per Word", Combine.perKey(CombineCountsPerWord()))
-            .apply("Combine to Map", Combine.globally(CombineWordsEliminatedMap()))
+            .apply("Count Eliminated Per Word", Combine.perKey<String, WordsEliminated, Double>(CombineCountsPerWord()))
+            .setCoder(KvCoder.of(StringUtf8Coder.of(), DoubleCoder.of()))
+            .apply(
+                "Combine to Map",
+                Combine.globally<KV<String, Double>, AverageEliminated>(CombineWordsEliminatedMap())
+            )
+            .setCoder(AvroCoder.of(AverageEliminated::class.java))
             .toAvro(
                 filePath = options.wordEliminatedPath
             )

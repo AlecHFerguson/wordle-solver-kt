@@ -4,7 +4,8 @@ import ai.deeppow.models.AverageEliminated
 import org.apache.beam.sdk.transforms.Combine
 import org.apache.beam.sdk.values.KV
 
-class CombineWordsEliminatedMap : Combine.CombineFn<KV<String, Double>, MutableMap<String, Double>, AverageEliminated>() {
+class CombineWordsEliminatedMap :
+    Combine.CombineFn<KV<String, Double>, MutableMap<String, Double>, AverageEliminated>() {
     override fun createAccumulator(): MutableMap<String, Double> {
         return mutableMapOf()
     }
@@ -17,7 +18,9 @@ class CombineWordsEliminatedMap : Combine.CombineFn<KV<String, Double>, MutableM
         return mutableAccumulator
     }
 
-    override fun mergeAccumulators(accumulators: MutableIterable<MutableMap<String, Double>>?): MutableMap<String, Double> {
+    override fun mergeAccumulators(
+        accumulators: MutableIterable<MutableMap<String, Double>>?
+    ): MutableMap<String, Double> {
         return accumulators!!.reduce { acc, other ->
             acc.putAll(other)
             acc
