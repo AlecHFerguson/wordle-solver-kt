@@ -32,6 +32,6 @@ class WordlePlayerTest {
                 player.makeGuess("soapy", game)
             }
         }
-        assertTrue { time < 769 }
+        assertTrue { time < 400 }
     }
 }

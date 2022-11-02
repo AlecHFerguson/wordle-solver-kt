@@ -76,21 +76,26 @@ class WordlePlayer(private val wordTree: WordTree, allWords: List<String>? = nul
     }
 
     private fun WordTree.getAvailableGuesses(): List<String> {
-        return wordMap.values.flatMap { it.getAvailableGuesses(0) }
-    }
-
-    private fun WordNode.getAvailableGuesses(letterIndex: Int): List<String> {
         val availableGuesses = mutableListOf<String>()
-        val availableLetters = letterMap[letterIndex] ?: return availableGuesses
-        if (availableLetters.contains(character)) {
-            if (isLeafWord) {
-                availableGuesses.add(wordSoFar)
-            }
-            nextWords.forEach { (_, node) ->
-                availableGuesses.addAll(node.getAvailableGuesses(letterIndex + 1))
+        val availableLetters = letterMap[0] ?: return availableGuesses
+        wordMap.values.forEach {
+            if (availableLetters.contains(it.character)) {
+                it.getAvailableGuesses(letterIndex = 1, availableGuesses = availableGuesses)
             }
         }
         return availableGuesses
+    }
+
+    private fun WordNode.getAvailableGuesses(letterIndex: Int, availableGuesses: MutableList<String>) {
+        if (isLeafWord) {
+            availableGuesses.add(wordSoFar)
+        }
+        val availableLetters = letterMap[letterIndex] ?: return
+        nextWords.values.forEach { node ->
+            if (availableLetters.contains(node.character)) {
+                node.getAvailableGuesses(letterIndex = letterIndex + 1, availableGuesses = availableGuesses)
+            }
+        }
     }
 }
 

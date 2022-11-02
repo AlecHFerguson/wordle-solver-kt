@@ -33,9 +33,9 @@ object GenerateAverageEliminatedMap {
 
     private suspend fun testForAllWords(wordTree: WordTree): List<Pair<String, Double>> {
         val wordList = wordTree.getAllWords().take(169)
-            return wordList.map { guessWord ->
-                testAllForWord(guessWord = guessWord, wordList = wordList, wordTree = wordTree)
-            }
+        return wordList.map { guessWord ->
+            testAllForWord(guessWord = guessWord, wordList = wordList, wordTree = wordTree)
+        }
     }
 
     private suspend fun testAllForWord(
