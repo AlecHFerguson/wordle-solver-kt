@@ -16,8 +16,8 @@ class WordlePlayerTest {
         player.makeGuess("stone", game)
         val guesses = player.guesses
         assertEquals(1, guesses.count())
-        assertEquals(113, guesses.first().remainingCount)
-        assertEquals(17341, guesses.first().eliminatedCount)
+        assertEquals(102, guesses.first().remainingCount)
+        assertEquals(14753, guesses.first().eliminatedCount)
     }
 
     @Test
