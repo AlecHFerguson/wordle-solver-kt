@@ -83,6 +83,7 @@ tasks.test {
 task(name = "generateAvgEliminated", type = JavaExec::class) {
     classpath = sourceSets["main"].runtimeClasspath
     main = "ai.deeppow.preprocessors.GenerateAverageEliminatedMap"
+    jvmArgs = listOf("-XX:+HeapDumpOnOutOfMemoryError")
 }
 
 task(name = "CreateMostEliminatedPipeline", type = JavaExec::class) {
