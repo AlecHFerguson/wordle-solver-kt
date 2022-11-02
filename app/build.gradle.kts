@@ -92,8 +92,10 @@ task(name = "CreateMostEliminatedPipeline", type = JavaExec::class) {
         "--runner=DataflowRunner",
         "--project=api-project-177134456185",
         "--region=us-central1",
+        "--dataflowServiceOptions=enable_prime",
         "--templateLocation=gs://deeppow-dataflow-templates/templates/CreateMostEliminatedPipeline",
         "--tempLocation=gs://deeppow-dataflow-templates/temp/CreateMostEliminatedPipeline",
+        "--gcpTempLocation=gs://deeppow-dataflow-templates/temp/CreateMostEliminatedPipeline",
         "--stagingLocation=gs://deeppow-dataflow-templates/staging/CreateMostEliminatedPipeline"
     )
 }

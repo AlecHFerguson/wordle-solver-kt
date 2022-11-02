@@ -5,7 +5,7 @@ set -euo pipefail
 DATA_BUCKET=gs://deeppow-data-bucket
 
 ARGS=(
-    wordTreePath=${DATA_BUCKET}/wordle/word-tree.avro
+#    wordTreePath=${DATA_BUCKET}/wordle/word-tree.avro
     wordEliminatedPath=${DATA_BUCKET}/wordle/outputs/average-eliminated
     maxNumWorkers=123
 )

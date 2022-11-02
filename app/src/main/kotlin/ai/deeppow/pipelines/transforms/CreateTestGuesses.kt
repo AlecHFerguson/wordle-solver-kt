@@ -1,26 +1,35 @@
 package ai.deeppow.pipelines.transforms
 
+import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
 import ai.deeppow.pipelines.models.GuessCombo
 import org.apache.beam.sdk.transforms.DoFn
-import org.apache.beam.sdk.values.PCollectionView
 
-class CreateTestGuesses(private val wordTreeView: PCollectionView<WordTree>) : DoFn<Int, GuessCombo>() {
+fun listOfAllWords(): List<String> {
+    val wordTree = getWordTree()
+    return wordTree.getAllWords()
+}
+
+class CreateTestGuesses : DoFn<String, GuessCombo>() {
+    private lateinit var wordTree: WordTree
+    private lateinit var allWords: List<String>
+
+    @Setup
+    fun setup() {
+        wordTree = getWordTree()
+        allWords = wordTree.getAllWords()
+    }
+
     @ProcessElement
-    fun processElement(context: ProcessContext) {
-        val wordTree: WordTree = context.sideInput(wordTreeView)
-        val allWords = wordTree.getAllWords()
-
-        allWords.forEach { guessWord ->
-            allWords.forEach { gameWord ->
-                context.output(
-                    GuessCombo(
-                        guessWord = guessWord,
-                        gameWord = gameWord
-                    )
+    fun processElement(@Element guessWord: String, context: ProcessContext) {
+        allWords.forEach { gameWord ->
+            context.output(
+                GuessCombo(
+                    guessWord = guessWord,
+                    gameWord = gameWord
                 )
-            }
+            )
         }
     }
 }

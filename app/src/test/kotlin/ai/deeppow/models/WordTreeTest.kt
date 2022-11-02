@@ -1,7 +1,10 @@
 package ai.deeppow.models
 
+import ai.deeppow.models.GetTree.getWordTree
+import kotlin.system.measureTimeMillis
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class WordTreeTest {
     @Test
@@ -93,5 +96,16 @@ internal class WordTreeTest {
             WordNode(character = "r".single(), wordSoFar = "skier", isLeafWord = true)
         )
         assertEquals(wordTree.getWord("skiing"), null)
+    }
+
+    @Test
+    fun testBenchmarkGetAllWords() {
+        val wordTree = getWordTree()
+        val time = measureTimeMillis {
+            repeat(1000) {
+                wordTree.getAllWords()
+            }
+        }
+        assertTrue { time < 4000 }
     }
 }

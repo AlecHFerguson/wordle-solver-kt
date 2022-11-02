@@ -2,18 +2,27 @@ package ai.deeppow.pipelines.transforms
 
 import ai.deeppow.game.WordleGame
 import ai.deeppow.game.WordlePlayer
+import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
 import ai.deeppow.pipelines.models.GuessCombo
 import ai.deeppow.pipelines.models.WordsEliminated
 import org.apache.beam.sdk.transforms.DoFn
-import org.apache.beam.sdk.values.PCollectionView
 
-class GetWordsEliminated(private val wordTreeView: PCollectionView<WordTree>) : DoFn<GuessCombo, WordsEliminated>() {
+class GetWordsEliminated : DoFn<GuessCombo, WordsEliminated>() {
+    private lateinit var wordTree: WordTree
+    private lateinit var allWords: List<String>
+
+    @Setup
+    fun setup() {
+        wordTree = getWordTree()
+        allWords = wordTree.getAllWords()
+    }
+
     @ProcessElement
     fun processElement(@Element element: GuessCombo, context: ProcessContext) {
-        val wordTree = context.sideInput(wordTreeView)
-        val player = WordlePlayer(wordTree = wordTree, allWords = wordTree.getAllWords())
+        val allWords = wordTree.getAllWords()
+        val player = WordlePlayer(wordTree = wordTree, allWords = allWords)
         val wordleGame = WordleGame(element.gameWord)
         player.makeGuess(word = element.guessWord, wordleGame = wordleGame)
 

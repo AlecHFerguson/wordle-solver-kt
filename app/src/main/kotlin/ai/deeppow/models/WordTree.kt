@@ -1,8 +1,7 @@
 package ai.deeppow.models
 
-import org.apache.avro.file.DataFileReader
+import org.apache.avro.file.DataFileStream
 import org.apache.avro.reflect.ReflectDatumReader
-import java.io.File
 
 const val wordTreeFile = "/word-tree.avro"
 
@@ -87,11 +86,11 @@ fun WordTree.getAllWords(): List<String> {
 
 object GetTree {
     fun getWordTree(): WordTree {
-        val wordTreeResource = javaClass.getResource(wordTreeFile)?.toURI() ?: throw IllegalArgumentException(
+        val wordTreeResource = javaClass.getResourceAsStream(wordTreeFile) ?: throw IllegalArgumentException(
             "$wordTreeFile not found in resources"
         )
         val reader = ReflectDatumReader(WordTree::class.java)
-        val fileReader = DataFileReader(File(wordTreeResource), reader)
+        val fileReader = DataFileStream(wordTreeResource, reader)
         while (fileReader.hasNext()) {
             return fileReader.next()
         }
