@@ -7,9 +7,9 @@ object NotPresent : Truthiness
 
 class WordleGame(private val theWord: String) {
     fun makeGuess(word: String): GuessResult {
-        if (word.count() != 5) {
-            throw IllegalArgumentException("Word must be 5 letters: $word")
-        }
+//        if (word.count() != 5) {
+//            throw IllegalArgumentException("Word must be 5 letters: $word")
+//        }
         return evaluateGuess(word)
     }
 

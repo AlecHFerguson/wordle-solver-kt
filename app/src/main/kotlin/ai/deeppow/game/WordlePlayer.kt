@@ -31,12 +31,12 @@ class WordlePlayer(private val wordTree: WordTree, allWords: List<String>? = nul
     private val letterMap: Map<Int, LettersForSlot> = initLetterMap()
     private var availableGuesses: List<String> = allWords ?: wordTree.getAvailableGuesses()
     val guesses = mutableListOf<GuessAnalysis>()
-    var solved = true
+    var solved = false
 
     fun makeGuess(word: String, wordleGame: WordleGame): WordlePlayer {
-        if (wordTree.getWord(word) == null) {
-            throw WordlePlayerException("$word not found in dictionary")
-        }
+//        if (wordTree.getWord(word) == null) {
+//            throw WordlePlayerException("$word not found in dictionary")
+//        }
         val guessResults = wordleGame.makeGuess(word)
         for (letter in guessResults.letters) {
             when (letter.result) {

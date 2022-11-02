@@ -33,29 +33,30 @@ object GenerateAverageEliminatedMap {
 
     private suspend fun testForAllWords(wordTree: WordTree): List<Pair<String, Double>> {
         val wordList = wordTree.getAllWords().take(169)
-        return wordList.map { guessWord ->
-            testAllForWord(guessWord = guessWord, wordList = wordList, wordTree = wordTree)
+        return coroutineScope {
+            wordList.map { guessWord ->
+                testAllForWord(scope = this, guessWord = guessWord, wordList = wordList, wordTree = wordTree)
+            }
         }
     }
 
     private suspend fun testAllForWord(
+        scope: CoroutineScope,
         guessWord: String,
         wordList: List<String>,
         wordTree: WordTree
     ): Pair<String, Double> {
         val runningTotal = AtomicInteger(0)
         val recordCount = AtomicInteger(0)
-        coroutineScope {
-            wordList.map { gameWord ->
-                launch {
-                    val player = WordlePlayer(wordTree = wordTree, allWords = wordList)
-                    val wordleGame = WordleGame(gameWord)
-                    player.makeGuess(word = guessWord, wordleGame = wordleGame)
-                    runningTotal.addAndGet(player.guesses.first().eliminatedCount)
-                    recordCount.incrementAndGet()
-                }
-            }.joinAll()
-        }
+        wordList.map { gameWord ->
+            scope.launch {
+                val player = WordlePlayer(wordTree = wordTree, allWords = wordList)
+                val wordleGame = WordleGame(gameWord)
+                player.makeGuess(word = guessWord, wordleGame = wordleGame)
+                runningTotal.addAndGet(player.guesses.first().eliminatedCount)
+                recordCount.incrementAndGet()
+            }
+        }.joinAll()
         val avg = (runningTotal.get().toDouble() / recordCount.get())
         println("$guessWord => $avg")
         return guessWord to avg
