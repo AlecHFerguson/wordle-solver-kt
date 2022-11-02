@@ -21,7 +21,6 @@ class GetWordsEliminated : DoFn<GuessCombo, WordsEliminated>() {
 
     @ProcessElement
     fun processElement(@Element element: GuessCombo, context: ProcessContext) {
-        val allWords = wordTree.getAllWords()
         val player = WordlePlayer(wordTree = wordTree, allWords = allWords)
         val wordleGame = WordleGame(element.gameWord)
         player.makeGuess(word = element.guessWord, wordleGame = wordleGame)
