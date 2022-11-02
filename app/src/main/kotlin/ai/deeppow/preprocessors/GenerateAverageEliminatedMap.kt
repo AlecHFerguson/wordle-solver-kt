@@ -9,7 +9,6 @@ import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.system.measureTimeMillis
 
 object GenerateAverageEliminatedMap {
     @JvmStatic
@@ -18,17 +17,17 @@ object GenerateAverageEliminatedMap {
 
         val wordTree = GetTree.getWordTree()
 
-        val time = measureTimeMillis {
-            val averageEliminateds: List<Pair<String, Double>> = runBlocking {
-                testForAllWords(wordTree = wordTree, scope = this)
-            }.sortedByDescending { it.second }
-            val averageEliminated = AverageEliminated(
-                words = LinkedHashMap(mutableMapOf(*averageEliminateds.toTypedArray()))
-            )
-            averageEliminated.writeToAvro(resourcesPath = resourcesPath, fileName = "average-eliminated.avro")
-            println("Done-zo: ${averageEliminated.get("abbey")}")
-        }
-        println("Took $time ms")
+//        val time = measureTimeMillis {
+        val averageEliminateds: List<Pair<String, Double>> = runBlocking {
+            testForAllWords(wordTree = wordTree, scope = this)
+        }.sortedByDescending { it.second }
+        val averageEliminated = AverageEliminated(
+            words = LinkedHashMap(mutableMapOf(*averageEliminateds.toTypedArray()))
+        )
+        averageEliminated.writeToAvro(resourcesPath = resourcesPath, fileName = "average-eliminated.avro")
+        println("Done-zo: ${averageEliminated.get("abbey")}")
+//        }
+//        println("Took $time ms")
     }
 
     private suspend fun testForAllWords(scope: CoroutineScope, wordTree: WordTree): List<Pair<String, Double>> {
