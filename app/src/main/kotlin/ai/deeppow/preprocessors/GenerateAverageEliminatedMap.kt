@@ -20,7 +20,7 @@ object GenerateAverageEliminatedMap {
 
         val time = measureTimeMillis {
             val averageEliminateds: List<Pair<String, Double>> = runBlocking {
-                testForAllWords(wordTree = wordTree)
+                testForAllWords(wordTree = wordTree, scope = this)
             }.sortedByDescending { it.second }
             val averageEliminated = AverageEliminated(
                 words = LinkedHashMap(mutableMapOf(*averageEliminateds.toTypedArray()))
@@ -31,13 +31,13 @@ object GenerateAverageEliminatedMap {
         println("Took $time ms")
     }
 
-    private suspend fun testForAllWords(wordTree: WordTree): List<Pair<String, Double>> {
+    private suspend fun testForAllWords(scope: CoroutineScope, wordTree: WordTree): List<Pair<String, Double>> {
         val wordList = wordTree.getAllWords().take(169)
-        return coroutineScope {
-            wordList.map { guessWord ->
-                async { testAllForWord(scope = this, guessWord = guessWord, wordList = wordList, wordTree = wordTree) }
-            }.awaitAll()
-        }
+        return wordList.map { guessWord ->
+            scope.async {
+                testAllForWord(scope = scope, guessWord = guessWord, wordList = wordList, wordTree = wordTree)
+            }
+        }.awaitAll()
     }
 
     private suspend fun testAllForWord(
