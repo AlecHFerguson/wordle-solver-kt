@@ -35,8 +35,8 @@ object GenerateAverageEliminatedMap {
         val wordList = wordTree.getAllWords().take(169)
         return coroutineScope {
             wordList.map { guessWord ->
-                testAllForWord(scope = this, guessWord = guessWord, wordList = wordList, wordTree = wordTree)
-            }
+                async { testAllForWord(scope = this, guessWord = guessWord, wordList = wordList, wordTree = wordTree) }
+            }.awaitAll()
         }
     }
 
