@@ -108,8 +108,7 @@ open class WordlePlayerLight(private val wordTree: WordTree, allWords: List<Stri
     }
 
     private fun String.hasAllRequiredLetters(): Boolean {
-        val charArray = toCharArray()
-        return requiredLetters.keys.all { charArray.contains(it) }
+        return requiredLetters.keys.all { this.contains(it) }
     }
 }
 
