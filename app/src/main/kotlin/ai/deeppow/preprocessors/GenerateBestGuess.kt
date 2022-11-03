@@ -2,7 +2,7 @@ package ai.deeppow.preprocessors
 
 import ai.deeppow.game.GuessSequence
 import ai.deeppow.game.WordleGame
-import ai.deeppow.game.WordlePlayer
+import ai.deeppow.game.WordlePlayerLight
 import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
@@ -13,7 +13,7 @@ object GenerateBestGuess {
         val wordTree = getWordTree()
 
         val guessSequences: List<GuessSequence> = wordTree.getAllWords().flatMap {
-            val player = WordlePlayer(wordTree = wordTree)
+            val player = WordlePlayerLight(wordTree = wordTree)
             it.playWordle(wordTree, game, player)
         }
         val topGuessSequences = guessSequences.sortedWith(
@@ -22,12 +22,16 @@ object GenerateBestGuess {
         println("Top guesses for $word: $topGuessSequences")
     }
 
-    private fun String.playWordle(wordTree: WordTree, game: WordleGame, player: WordlePlayer): List<GuessSequence> {
+    private fun String.playWordle(
+        wordTree: WordTree,
+        game: WordleGame,
+        player: WordlePlayerLight
+    ): List<GuessSequence> {
         val guessSequences = mutableListOf<GuessSequence>()
         if (player.guesses.count() < 6) {
             player.makeGuess(word = this, wordleGame = game)
-            if (player.solved) {
-                guessSequences.add(GuessSequence(guesses = player.guesses, solved = player.solved))
+            if (player.isSolved) {
+                guessSequences.add(GuessSequence(guesses = player.guesses, solved = player.isSolved))
             }
             player.getAvailableGuesses().forEach { guess ->
                 guessSequences.addAll(

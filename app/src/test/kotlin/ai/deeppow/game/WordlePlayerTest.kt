@@ -1,5 +1,6 @@
 package ai.deeppow.game
 
+import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.getAllWords
 import kotlin.system.measureTimeMillis
@@ -12,7 +13,7 @@ class WordlePlayerTest {
     fun playForMismatch() {
         val game = WordleGame("snowy")
         val wordTree = getWordTree()
-        val player = WordlePlayer(wordTree)
+        val player = WordlePlayerLight(wordTree)
         player.makeGuess("stone", game)
         val guesses = player.guesses
         assertEquals(1, guesses.count())
@@ -28,10 +29,16 @@ class WordlePlayerTest {
 
         val time = measureTimeMillis {
             repeat(1000) {
-                val player = WordlePlayer(wordTree, allWords)
+                val player = WordlePlayerLight(wordTree, allWords)
                 player.makeGuess("soapy", game)
             }
         }
         assertTrue { time < 400 }
+    }
+
+    @Test
+    fun testSolve() {
+        val player = WordlePlayer(avgEliminated = AverageEliminated.read())
+        player.solveForWord(WordleGame("mivvy"))
     }
 }
