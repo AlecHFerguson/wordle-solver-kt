@@ -1,9 +1,11 @@
 package ai.deeppow.game
 
+import ai.deeppow.models.AverageEliminated
+import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordNode
 import ai.deeppow.models.WordTree
 
-class WordlePlayerException(message: String, cause: Throwable? = null) : Exception(message, cause)
+const val bestStartWord = "lares"
 
 data class GuessAnalysis(
     val word: String,
@@ -27,27 +29,34 @@ data class LettersForSlot(
     fun contains(char: Char): Boolean = letters.contains(char)
 }
 
-class WordlePlayer(private val wordTree: WordTree, allWords: List<String>? = null) {
+open class WordlePlayerLight(private val wordTree: WordTree, allWords: List<String>? = null) {
     private val letterMap: Map<Int, LettersForSlot> = initLetterMap()
+    private val requiredLetters: MutableMap<Char, Int> = mutableMapOf()
     private var availableGuesses: List<String> = allWords ?: wordTree.getAvailableGuesses()
     val guesses = mutableListOf<GuessAnalysis>()
-    var solved = true
+    var isSolved = false
 
-    fun makeGuess(word: String, wordleGame: WordleGame): WordlePlayer {
-        if (wordTree.getWord(word) == null) {
-            throw WordlePlayerException("$word not found in dictionary")
-        }
+    fun makeGuess(word: String, wordleGame: WordleGame): WordlePlayerLight {
+//        if (wordTree.getWord(word) == null) {
+//            throw WordlePlayerException("$word not found in dictionary")
+//        }
         val guessResults = wordleGame.makeGuess(word)
         for (letter in guessResults.letters) {
             when (letter.result) {
-                is Correct -> letterMap[letter.guessIndex]!!.setExclusive(letter.letter)
-                is OtherSlot -> letterMap[letter.guessIndex]!!.remove(letter.letter)
+                is Correct -> {
+                    letterMap[letter.guessIndex]!!.setExclusive(letter.letter)
+                    requiredLetters.put(letter.letter, 1)
+                }
+                is OtherSlot -> {
+                    letterMap[letter.guessIndex]!!.remove(letter.letter)
+                    requiredLetters.put(letter.letter, 1)
+                }
                 is NotPresent -> letterMap.values.forEach { charList ->
                     charList.remove(letter.letter)
                 }
             }
         }
-        solved = guessResults.solved
+        isSolved = guessResults.solved
         guesses.add(analyzeGuess(word, guessResults))
         return this
     }
@@ -87,7 +96,7 @@ class WordlePlayer(private val wordTree: WordTree, allWords: List<String>? = nul
     }
 
     private fun WordNode.getAvailableGuesses(letterIndex: Int, availableGuesses: MutableList<String>) {
-        if (isLeafWord) {
+        if (isLeafWord && wordSoFar.hasAllRequiredLetters()) {
             availableGuesses.add(wordSoFar)
         }
         val availableLetters = letterMap[letterIndex] ?: return
@@ -97,6 +106,31 @@ class WordlePlayer(private val wordTree: WordTree, allWords: List<String>? = nul
             }
         }
     }
+
+    private fun String.hasAllRequiredLetters(): Boolean {
+        return requiredLetters.keys.all { this.contains(it) }
+    }
 }
 
 data class GuessSequence(val guesses: List<GuessAnalysis>, val solved: Boolean)
+
+class WordlePlayer(
+    private val avgEliminated: AverageEliminated,
+    wordTree: WordTree = getWordTree()
+) : WordlePlayerLight(wordTree = wordTree) {
+    fun solveForWord(wordleGame: WordleGame): Boolean {
+        makeGuess(word = bestStartWord, wordleGame = wordleGame)
+        repeat(6) {
+            if (isSolved) {
+                return true
+            }
+            val guessWord = getBestGuessWord()
+            makeGuess(word = guessWord, wordleGame = wordleGame)
+        }
+        return false
+    }
+
+    private fun getBestGuessWord(): String {
+        return getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }.first()
+    }
+}

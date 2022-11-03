@@ -2,7 +2,7 @@ package ai.deeppow
 
 import ai.deeppow.game.GuessAnalysis
 import ai.deeppow.game.WordleGame
-import ai.deeppow.game.WordlePlayer
+import ai.deeppow.game.WordlePlayerLight
 import ai.deeppow.models.GetTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
@@ -32,7 +32,7 @@ private suspend fun testAllForWord(
     return coroutineScope {
         wordList.map { word ->
             async {
-                val player = WordlePlayer(wordTree = wordTree)
+                val player = WordlePlayerLight(wordTree = wordTree)
                 player.makeGuess(word = word, wordleGame = wordleGame)
                 player.guesses.first()
             }
