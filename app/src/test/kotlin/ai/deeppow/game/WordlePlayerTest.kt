@@ -39,6 +39,7 @@ class WordlePlayerTest {
     @Test
     fun testSolve() {
         val player = WordlePlayer(avgEliminated = AverageEliminated.read())
-        player.solveForWord(WordleGame("mivvy"))
+        player.solveForWord(WordleGame("nanny"))
+        println("Solved = ${player.isSolved}, remaining guesses = ${player.getAvailableGuesses()}")
     }
 }
