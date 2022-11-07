@@ -97,3 +97,34 @@ object GetTree {
         throw IllegalArgumentException("No WordTree found in file $wordTreeFile")
     }
 }
+
+val letterFrequencyMap: Map<Char, Int> by lazy {
+    mutableMapOf(
+        Pair("a".single(), 7128),
+        Pair("h".single(), 1993),
+        Pair("e".single(), 7455),
+        Pair("d".single(), 2735),
+        Pair("l".single(), 3780),
+        Pair("i".single(), 4381),
+        Pair("p".single(), 2436),
+        Pair("s".single(), 7319),
+        Pair("r".single(), 4714),
+        Pair("g".single(), 1864),
+        Pair("t".single(), 3707),
+        Pair("b".single(), 1849),
+        Pair("c".single(), 2246),
+        Pair("k".single(), 1753),
+        Pair("f".single(), 1240),
+        Pair("m".single(), 2414),
+        Pair("n".single(), 3478),
+        Pair("y".single(), 2400),
+        Pair("o".single(), 5212),
+        Pair("u".single(), 2927),
+        Pair("j".single(), 342),
+        Pair("2".single(), 1127),
+        Pair("v".single(), 801),
+        Pair("z".single(), 503),
+        Pair("x".single(), 326),
+        Pair("q".single(), 145),
+    )
+}

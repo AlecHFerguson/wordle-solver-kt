@@ -65,4 +65,14 @@ data class GuessResult(
     val guess: String,
     val letters: List<CharacterResult>,
     val solved: Boolean
-)
+) {
+    fun getScore(): Int {
+        return letters.sumOf {
+            return@sumOf when (it.result) {
+                is Correct -> 2 as Int
+                is OtherSlot -> 1
+                is NotPresent -> 0
+            }
+        }
+    }
+}

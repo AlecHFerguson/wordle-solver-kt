@@ -4,10 +4,15 @@ import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordNode
 import ai.deeppow.models.WordTree
+import ai.deeppow.models.letterFrequencyMap
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 
-const val bestStartWord = "soare"
+const val bestStartWord = "lares"
+const val maxTestCount = 269
+const val maxGuesses = 6
+const val guessIterations = maxGuesses - 1
+const val lastGuessIteration = guessIterations - 1
 
 data class GuessAnalysis(
     val word: String,
@@ -19,7 +24,8 @@ data class GuessAnalysis(
 
 sealed interface GuessStrategy
 object Simple : GuessStrategy
-object Calculated : GuessStrategy
+object TestAllScored : GuessStrategy
+object TestAllFull : GuessStrategy
 
 data class LettersForSlot(
     var letters: MutableMap<Char, Boolean> = mutableMapOf(*('a'..'z').map { Pair(it, true) }.toTypedArray())
@@ -133,7 +139,7 @@ data class GuessSequence(val guesses: List<GuessAnalysis>, val solved: Boolean)
 
 class WordlePlayer(
     private val avgEliminated: AverageEliminated,
-    private val strategy: GuessStrategy = Calculated,
+    private val strategy: GuessStrategy = TestAllFull,
     wordTree: WordTree = getWordTree()
 ) : WordlePlayerLight(wordTree = wordTree) {
     private var hasMadeVarietyGuess: Boolean = false
@@ -143,8 +149,8 @@ class WordlePlayer(
         if (isSolved) {
             return true
         }
-        repeat(9) {
-            if (it == 8) {
+        repeat(guessIterations) {
+            if (it == lastGuessIteration) {
                 hasMadeVarietyGuess = true
             }
             val guessWord = getBestGuessWord()
@@ -157,44 +163,75 @@ class WordlePlayer(
     }
 
     private fun getBestGuessWord(): String {
-        val sortedGuesses = getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }.sorted()
+        val availableGuesses = getAvailableGuesses()
+        if (!hasMadeVarietyGuess && needsMoreVariety()) {
+            val varietyGuess = makeVarietyGuess()
+            if (varietyGuess != null) {
+                hasMadeVarietyGuess = true
+                return varietyGuess
+            }
+        }
+        val sortedGuesses = availableGuesses.sortedByDescending { avgEliminated.get(it) }
         return when (strategy) {
             is Simple -> getSimpleGuess(sortedGuesses)
-            is Calculated -> calculateBestGuessWord(sortedGuesses)
+            is TestAllFull -> calculateBestGuessWord(sortedGuesses)
+            is TestAllScored -> getBestGuessWordByScore(sortedGuesses)
         }
     }
 
     private fun getSimpleGuess(sortedGuesses: List<String>): String {
-        if (!hasMadeVarietyGuess && needsMoreVariety()) {
-            val varietyGuess = makeVarietyGuess()
-            if (varietyGuess != null) {
-                hasMadeVarietyGuess = true
-                return varietyGuess
-            }
-        }
         return sortedGuesses.first()
     }
 
-    private fun calculateBestGuessWord(sortedGuesses: List<String>): String {
-        if (sortedGuesses.count() > 369) {
-            return sortedGuesses.first()
+    private fun getBestGuessWordByScore(sortedGuesses: List<String>): String {
+        if (sortedGuesses.count() > maxTestCount) {
+            return getSimpleGuess(sortedGuesses = sortedGuesses)
         }
-        if (!hasMadeVarietyGuess && needsMoreVariety()) {
-            val varietyGuess = makeVarietyGuess()
-            if (varietyGuess != null) {
-                hasMadeVarietyGuess = true
-                return varietyGuess
+        val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses)
+        return guessResults.first
+    }
+
+    private fun testGuessScoreAllWords(sortedGuesses: List<String>): Pair<String, Double> {
+        val wordScores: List<Pair<String, Double>> = sortedGuesses.take(10).map { guessWord ->
+            runBlocking {
+                getScoreForWord(guessWord = guessWord, wordList = sortedGuesses, scope = this)
             }
         }
+        return wordScores.maxBy { it.second }
+    }
+
+    private suspend fun getScoreForWord(
+        guessWord: String,
+        wordList: List<String>,
+        scope: CoroutineScope
+    ): Pair<String, Double> {
+        val runningTotal = AtomicInteger(0)
+        val recordCount = AtomicInteger(0)
+        wordList.map { gameWord ->
+            scope.async {
+                val wordleGame = WordleGame(gameWord)
+                val result = wordleGame.makeGuess(guessWord)
+                runningTotal.addAndGet(result.getScore())
+                recordCount.incrementAndGet()
+            }
+        }.awaitAll()
+        val avg = (runningTotal.get().toDouble() / recordCount.get())
+        return guessWord to avg
+    }
+
+    private fun calculateBestGuessWord(availableGuesses: List<String>): String {
+        if (availableGuesses.count() > maxTestCount) {
+            return getSimpleGuess(sortedGuesses = availableGuesses)
+        }
         val guessResults = runBlocking {
-            testForAllWords(wordTree = wordTree, scope = this, wordList = sortedGuesses)
+            testForAllWords(wordTree = wordTree, scope = this, wordList = availableGuesses)
         }
         return guessResults.maxBy { it.second }.first
     }
 
     private fun needsMoreVariety(): Boolean {
         return getAvailableGuesses().count() >= 5 &&
-            guesses.last().guessResult.letters.count { it.result is Correct } >= 2
+            guesses.last().guessResult.letters.count { it.result is Correct } >= 3
     }
 
     private fun makeVarietyGuess(): String? {
@@ -212,7 +249,7 @@ class WordlePlayer(
     }
 
     private fun WordTree.getVarietyGuess(varietyColumn: Map<Char, Boolean>): String? {
-        wordMap.values.forEach { wordNode ->
+        wordMap.values.sortedByDescending { letterFrequencyMap[it.character] }.forEach { wordNode ->
             if (varietyColumn.containsKey(wordNode.character)) {
                 val newVarietyColumn = varietyColumn.toMutableMap()
                 newVarietyColumn.remove(wordNode.character)
@@ -229,7 +266,7 @@ class WordlePlayer(
         if (isLeafWord) {
             return wordSoFar
         }
-        nextWords.values.forEach { wordNode ->
+        nextWords.values.sortedByDescending { letterFrequencyMap[it.character] }.forEach { wordNode ->
             if (varietyColumn.containsKey(wordNode.character)) {
                 val newVarietyColumn = varietyColumn.toMutableMap()
                 newVarietyColumn.remove(wordNode.character)
