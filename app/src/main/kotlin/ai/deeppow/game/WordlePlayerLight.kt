@@ -14,7 +14,6 @@ const val maxTestCount = 269
 const val maxGuesses = 69
 const val guessIterations = maxGuesses - 1
 const val lastGuessIteration = guessIterations - 1
-const val maxVarietyGuesses = 3
 
 data class GuessAnalysis(
     val word: String,
@@ -194,7 +193,7 @@ class WordlePlayer(
     }
 
     private fun testGuessScoreAllWords(sortedGuesses: List<String>): Pair<String, Double> {
-        val wordScores: List<Pair<String, Double>> = sortedGuesses.take(10).map { guessWord ->
+        val wordScores: List<Pair<String, Double>> = sortedGuesses.take(69).map { guessWord ->
             runBlocking {
                 getScoreForWord(guessWord = guessWord, wordList = sortedGuesses, scope = this)
             }
@@ -232,10 +231,10 @@ class WordlePlayer(
     }
 
     private fun needsMoreVariety(): Boolean {
-//        return getAvailableGuesses().count() > 4 && (
-           return (varietyGuessCount < 1 && guesses.last().guessResult.letters.count { it.result is Correct } >= 3) ||
+        return getAvailableGuesses().count() > 2 && (
+            (varietyGuessCount < 1 && guesses.last().guessResult.letters.count { it.result is Correct } >= 3) ||
                 (varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4)
-
+            )
     }
 
     private fun makeVarietyGuess(): String? {
