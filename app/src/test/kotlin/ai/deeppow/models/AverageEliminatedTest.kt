@@ -7,7 +7,7 @@ class AverageEliminatedTest {
     @Test
     fun testRead() {
         val result = AverageEliminated.read()
-        assertEquals(12028.29215752272, result.get("abode"))
+        assertEquals(13934.842948502188, result.get("abode"))
     }
 
     @Test

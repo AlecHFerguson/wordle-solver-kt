@@ -16,6 +16,8 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
+
+    jacoco
 }
 
 buildscript {
@@ -78,6 +80,42 @@ application {
 
 tasks.test {
     useJUnitPlatform()
+
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(false)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.69".toBigDecimal()
+            }
+        }
+
+        rule {
+            isEnabled = false
+            element = "CLASS"
+            includes = listOf("org.gradle.*")
+
+            limit {
+                counter = "LINE"
+                value = "TOTALCOUNT"
+                maximum = "0.69".toBigDecimal()
+            }
+        }
+    }
 }
 
 task(name = "generateAvgEliminated", type = JavaExec::class) {
