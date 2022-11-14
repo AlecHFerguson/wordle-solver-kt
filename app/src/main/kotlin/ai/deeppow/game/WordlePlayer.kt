@@ -99,9 +99,9 @@ class WordlePlayer(
 
     private fun needsMoreVariety(): Boolean {
         return getAvailableGuesses().count() > 2 && (
-                (varietyGuessCount < 1 && guesses.last().guessResult.letters.count { it.result is Correct } >= 3) ||
-                        (varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4)
-                )
+            (varietyGuessCount < 1 && guesses.last().guessResult.letters.count { it.result is Correct } >= 3) ||
+                (varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4)
+            )
     }
 
     private fun makeVarietyGuess(): String? {

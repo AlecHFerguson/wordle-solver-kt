@@ -1,13 +1,8 @@
 package ai.deeppow.game
 
-import ai.deeppow.models.AverageEliminated
-import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordNode
 import ai.deeppow.models.WordTree
-import ai.deeppow.models.letterFrequencyMap
-import ai.deeppow.preprocessors.GenerateLetterFrequencyMap.generateFrequencyMap
 import kotlinx.coroutines.*
-import java.util.concurrent.atomic.AtomicInteger
 
 const val bestStartWord = "lares"
 const val maxTestCount = 269
@@ -98,4 +93,3 @@ open class WordlePlayerLight(
 }
 
 data class GuessSequence(val guesses: List<GuessAnalysis>, val solved: Boolean)
-
