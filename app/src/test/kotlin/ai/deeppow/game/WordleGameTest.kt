@@ -39,4 +39,44 @@ class WordleGameTest {
             result
         )
     }
+
+    @Test
+    fun testDupeLetters() {
+        val game = WordleGame("fates")
+        val result = game.makeGuess("safes")
+        assertEquals(
+            GuessResult(
+                guess = "sassy",
+                letters = listOf(
+                    CharacterResult(letter = "s".first(), guessIndex = 0, result = NotPresent),
+                    CharacterResult(letter = "a".first(), guessIndex = 1, result = Correct),
+                    CharacterResult(letter = "f".first(), guessIndex = 2, result = OtherSlot),
+                    CharacterResult(letter = "e".first(), guessIndex = 3, result = Correct),
+                    CharacterResult(letter = "s".first(), guessIndex = 4, result = Correct)
+                ),
+                solved = false
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun testSassyAsses() {
+        val game = WordleGame("asses")
+        val result = game.makeGuess("sassy")
+        assertEquals(
+            GuessResult(
+                guess = "sassy",
+                letters = listOf(
+                    CharacterResult(letter = "s".first(), guessIndex = 0, result = OtherSlot),
+                    CharacterResult(letter = "a".first(), guessIndex = 1, result = OtherSlot),
+                    CharacterResult(letter = "f".first(), guessIndex = 2, result = Correct),
+                    CharacterResult(letter = "e".first(), guessIndex = 3, result = OtherSlot),
+                    CharacterResult(letter = "s".first(), guessIndex = 4, result = NotPresent)
+                ),
+                solved = false
+            ),
+            result
+        )
+    }
 }

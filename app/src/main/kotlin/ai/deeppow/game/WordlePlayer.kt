@@ -31,7 +31,6 @@ class WordlePlayer(
     }
 
     internal fun getBestGuessWord(): String {
-        val availableGuesses = getAvailableGuesses()
         if (needsMoreVariety()) {
             val varietyGuess = makeVarietyGuess()
             if (varietyGuess != null) {
@@ -39,7 +38,7 @@ class WordlePlayer(
                 return varietyGuess
             }
         }
-        val sortedGuesses = availableGuesses.sortedByDescending { avgEliminated.get(it) }
+        val sortedGuesses = getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
         return when (strategy) {
             is Simple -> getSimpleGuess(sortedGuesses)
             is TestAllFull -> calculateBestGuessWord(sortedGuesses)
