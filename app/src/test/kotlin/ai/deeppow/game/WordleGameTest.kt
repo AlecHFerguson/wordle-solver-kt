@@ -46,7 +46,7 @@ class WordleGameTest {
         val result = game.makeGuess("safes")
         assertEquals(
             GuessResult(
-                guess = "sassy",
+                guess = "safes",
                 letters = listOf(
                     CharacterResult(letter = "s".first(), guessIndex = 0, result = NotPresent),
                     CharacterResult(letter = "a".first(), guessIndex = 1, result = Correct),
@@ -70,9 +70,49 @@ class WordleGameTest {
                 letters = listOf(
                     CharacterResult(letter = "s".first(), guessIndex = 0, result = OtherSlot),
                     CharacterResult(letter = "a".first(), guessIndex = 1, result = OtherSlot),
-                    CharacterResult(letter = "f".first(), guessIndex = 2, result = Correct),
-                    CharacterResult(letter = "e".first(), guessIndex = 3, result = OtherSlot),
-                    CharacterResult(letter = "s".first(), guessIndex = 4, result = NotPresent)
+                    CharacterResult(letter = "s".first(), guessIndex = 2, result = Correct),
+                    CharacterResult(letter = "s".first(), guessIndex = 3, result = OtherSlot),
+                    CharacterResult(letter = "y".first(), guessIndex = 4, result = NotPresent)
+                ),
+                solved = false
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun testManyTs() {
+        val game = WordleGame("faint")
+        val result = game.makeGuess("trott")
+        assertEquals(
+            GuessResult(
+                guess = "trott",
+                letters = listOf(
+                    CharacterResult(letter = "t".first(), guessIndex = 0, result = NotPresent),
+                    CharacterResult(letter = "r".first(), guessIndex = 1, result = NotPresent),
+                    CharacterResult(letter = "o".first(), guessIndex = 2, result = NotPresent),
+                    CharacterResult(letter = "t".first(), guessIndex = 3, result = NotPresent),
+                    CharacterResult(letter = "t".first(), guessIndex = 4, result = Correct)
+                ),
+                solved = false
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun testNoneCorrect() {
+        val game = WordleGame("snowy")
+        val result = game.makeGuess("clear")
+        assertEquals(
+            GuessResult(
+                guess = "clear",
+                letters = listOf(
+                    CharacterResult(letter = "c".first(), guessIndex = 0, result = NotPresent),
+                    CharacterResult(letter = "l".first(), guessIndex = 1, result = NotPresent),
+                    CharacterResult(letter = "e".first(), guessIndex = 2, result = NotPresent),
+                    CharacterResult(letter = "a".first(), guessIndex = 3, result = NotPresent),
+                    CharacterResult(letter = "r".first(), guessIndex = 4, result = NotPresent)
                 ),
                 solved = false
             ),
