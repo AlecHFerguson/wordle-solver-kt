@@ -8,7 +8,7 @@ class LetterMapTest {
     fun testUpdateFromResult() {
         val letterMap = LetterMap()
         letterMap.updateFromResult(letter = CharacterResult(letter = "s".single(), guessIndex = 3, result = Correct))
-        assertEquals(LettersForSlot(letters = mutableMapOf(Pair("s".single(), true))), letterMap.get(3))
+        assertEquals(LettersForSlot(letters = mutableMapOf(Pair("s".single(), true)), solved = true), letterMap.get(3))
 
         letterMap.updateFromResult(letter = CharacterResult(letter = "k".single(), guessIndex = 2, result = NotPresent))
         val expectedLetterMap = mutableMapOf(

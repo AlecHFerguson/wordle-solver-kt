@@ -77,6 +77,19 @@ class WordleGame(private val gameWord: String) {
                     wordIndex = index,
                     result = Correct
                 )
+                val otherSlotGuess = matchingChar.otherSlotGuess
+                if (otherSlotGuess != null) {
+                    val possibleChar = foundCharIndices.firstOrNull {
+                        it.correctGuess == null && it.otherSlotGuess == null && it.wordIndex > index
+                    }
+                    if (possibleChar != null) {
+                        possibleChar.otherSlotGuess = otherSlotGuess
+                    } else {
+                        otherSlotGuess.result = NotPresent
+                        notPresentGuesses.add(otherSlotGuess)
+                    }
+                    matchingChar.otherSlotGuess = null
+                }
                 return
             }
             val firstOtherSlotChar = foundCharIndices.firstOrNull {

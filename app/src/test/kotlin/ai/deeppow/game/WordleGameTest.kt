@@ -101,6 +101,46 @@ class WordleGameTest {
     }
 
     @Test
+    fun testGarriAargh() {
+        val game = WordleGame("aargh")
+        val result = game.makeGuess("garri")
+        assertEquals(
+            GuessResult(
+                guess = "garri",
+                letters = listOf(
+                    CharacterResult(letter = "g".first(), guessIndex = 0, result = OtherSlot),
+                    CharacterResult(letter = "a".first(), guessIndex = 1, result = Correct),
+                    CharacterResult(letter = "r".first(), guessIndex = 2, result = Correct),
+                    CharacterResult(letter = "r".first(), guessIndex = 3, result = NotPresent),
+                    CharacterResult(letter = "i".first(), guessIndex = 4, result = NotPresent)
+                ),
+                solved = false
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun testCoomyAboon() {
+        val game = WordleGame("aboon")
+        val result = game.makeGuess("coomy")
+        assertEquals(
+            GuessResult(
+                guess = "coomy",
+                letters = listOf(
+                    CharacterResult(letter = "c".first(), guessIndex = 0, result = NotPresent),
+                    CharacterResult(letter = "o".first(), guessIndex = 1, result = OtherSlot),
+                    CharacterResult(letter = "o".first(), guessIndex = 2, result = Correct),
+                    CharacterResult(letter = "m".first(), guessIndex = 3, result = NotPresent),
+                    CharacterResult(letter = "y".first(), guessIndex = 4, result = NotPresent)
+                ),
+                solved = false
+            ),
+            result
+        )
+    }
+
+    @Test
     fun testNoneCorrect() {
         val game = WordleGame("snowy")
         val result = game.makeGuess("clear")
