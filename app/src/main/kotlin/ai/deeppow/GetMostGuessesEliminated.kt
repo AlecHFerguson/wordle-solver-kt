@@ -12,7 +12,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.runBlocking
 
 fun main() {
-    val game = WordleGame(theWord = "snowy")
+    val game = WordleGame(gameWord = "snowy")
     val wordTree = GetTree.getWordTree()
 
     val wordList = wordTree.getAllWords()

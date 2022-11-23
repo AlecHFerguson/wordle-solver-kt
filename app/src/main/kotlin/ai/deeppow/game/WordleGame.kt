@@ -36,7 +36,7 @@ data class GuessResult(
     }
 }
 
-class WordleGame(private val theWord: String) {
+class WordleGame(private val gameWord: String) {
     fun makeGuess(word: String): GuessResult {
 //        if (word.count() != 5) {
 //            throw IllegalArgumentException("Word must be 5 letters: $word")
@@ -46,10 +46,84 @@ class WordleGame(private val theWord: String) {
 
     private data class CharPlace(
         val wordIndex: Int,
-        var found: Boolean = false
+        var found: Boolean = false,
+        var correctGuess: CharResultIntermediate? = null,
+        var otherSlotGuess: CharResultIntermediate? = null,
     )
 
-    private fun String.toWordMap(): Map<Char, List<CharPlace>> {
+    private data class WordleMap(
+        val letters: Map<Char, List<CharPlace>>,
+        val notPresentGuesses: MutableList<CharResultIntermediate> = mutableListOf()
+    ) {
+        fun evaluateChar(index: Int, char: Char) {
+            val foundCharIndices = letters[char]
+            if (foundCharIndices == null) {
+                notPresentGuesses.add(
+                    CharResultIntermediate(
+                        letter = char,
+                        guessIndex = index,
+                        wordIndex = null,
+                        result = NotPresent
+                    )
+                )
+                return
+            }
+            val matchingChar = foundCharIndices.firstOrNull { it.wordIndex == index }
+            if (matchingChar != null) {
+                matchingChar.found = true
+                matchingChar.correctGuess = CharResultIntermediate(
+                    letter = char,
+                    guessIndex = index,
+                    wordIndex = index,
+                    result = Correct
+                )
+                return
+            }
+            val firstOtherSlotChar = foundCharIndices.firstOrNull {
+                it.correctGuess == null && it.otherSlotGuess == null
+            }
+            if (firstOtherSlotChar != null) {
+                firstOtherSlotChar.found = true
+                firstOtherSlotChar.otherSlotGuess = CharResultIntermediate(
+                    letter = char,
+                    guessIndex = index,
+                    wordIndex = firstOtherSlotChar.wordIndex,
+                    result = OtherSlot
+                )
+                return
+            }
+            notPresentGuesses.add(
+                CharResultIntermediate(
+                    letter = char,
+                    guessIndex = index,
+                    wordIndex = null,
+                    result = NotPresent
+                )
+            )
+        }
+
+        fun deduplicate(): List<CharacterResult> {
+            val outputs = notPresentGuesses.mapTo(mutableListOf()) { it.toCharacterResult() }
+            letters.values.forEach { charPlaces ->
+                charPlaces.forEach { charPlace ->
+                    val correctGuess = charPlace.correctGuess
+                    if (correctGuess != null) {
+                        outputs.add(correctGuess.toCharacterResult())
+                    }
+                    val otherSlotGuess = charPlace.otherSlotGuess
+                    if (otherSlotGuess != null) {
+                        if (correctGuess != null) {
+                            otherSlotGuess.result = NotPresent
+                        }
+                        outputs.add(otherSlotGuess.toCharacterResult())
+                    }
+                }
+            }
+            return outputs.sortedBy { it.guessIndex }
+        }
+    }
+
+    private fun String.toWordMap(): WordleMap {
         val wordMap = mutableMapOf<Char, MutableList<CharPlace>>()
         forEachIndexed { index, char ->
             wordMap.getOrPut(char) {
@@ -58,73 +132,22 @@ class WordleGame(private val theWord: String) {
                 CharPlace(wordIndex = index, found = false)
             )
         }
-        return wordMap
+        return WordleMap(
+            letters = wordMap
+        )
     }
 
     private fun evaluateGuess(guessWord: String): GuessResult {
-        val wordleMap = theWord.toWordMap()
-        val charsMap = mutableMapOf<Char, MutableList<CharResultIntermediate>>()
+        val wordleMap = gameWord.toWordMap()
         guessWord.toCharArray().forEachIndexed { index, char ->
-            val evaluation = evaluateChar(index, char, wordleMap)
-            charsMap.getOrPut(char) { mutableListOf() }.add(evaluation)
+            wordleMap.evaluateChar(index, char)
         }
-        val guessResults = charsMap.deduplicate()
+        val guessResults = wordleMap.deduplicate()
 
         return GuessResult(
             guess = guessWord,
             letters = guessResults,
             solved = guessResults.all { it.result is Correct }
         )
-    }
-
-    private fun evaluateChar(index: Int, char: Char, wordleMap: Map<Char, List<CharPlace>>): CharResultIntermediate {
-        val foundCharIndices = wordleMap[char] ?: return CharResultIntermediate(
-            letter = char,
-            guessIndex = index,
-            wordIndex = null,
-            result = NotPresent
-        )
-        val matchingChar = foundCharIndices.firstOrNull { it.wordIndex == index }
-        if (matchingChar != null) {
-            matchingChar.found = true
-            return CharResultIntermediate(
-                letter = char,
-                guessIndex = index,
-                wordIndex = index,
-                result = Correct
-            )
-        }
-        val firstOtherSlotChar = foundCharIndices.firstOrNull { !it.found }
-        if (firstOtherSlotChar != null) {
-            firstOtherSlotChar.found = true
-            return CharResultIntermediate(
-                letter = char,
-                guessIndex = index,
-                wordIndex = firstOtherSlotChar.wordIndex,
-                result = OtherSlot
-            )
-        }
-        return CharResultIntermediate(
-            letter = char,
-            guessIndex = index,
-            wordIndex = null,
-            result = NotPresent
-        )
-    }
-
-    private fun MutableMap<Char, MutableList<CharResultIntermediate>>.deduplicate(): List<CharacterResult> {
-        val output = mutableListOf<CharacterResult>()
-        values.forEach { charValues ->
-            charValues.forEach { char ->
-                if (char.result is OtherSlot) {
-                    val correctChars = charValues.firstOrNull { it.result is Correct && it.wordIndex == char.wordIndex }
-                    if (correctChars != null) {
-                        char.result = NotPresent
-                    }
-                }
-                output.add(char.toCharacterResult())
-            }
-        }
-        return output.sortedBy { it.guessIndex }
     }
 }
