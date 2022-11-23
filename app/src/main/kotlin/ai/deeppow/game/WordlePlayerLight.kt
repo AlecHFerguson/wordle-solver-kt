@@ -38,7 +38,10 @@ open class WordlePlayerLight(
 //            throw WordlePlayerException("$word not found in dictionary")
 //        }
         val guessResults = wordleGame.makeGuess(word)
-        for (letter in guessResults.letters) {
+        letters@ for (letter in guessResults.letters) {
+            if (letter.result is NotPresent && guessResults.letters.any { it.letter == letter.letter && it.result !is NotPresent }) {
+                continue@letters
+            }
             letterMap.updateFromResult(letter = letter)
         }
         isSolved = guessResults.solved
