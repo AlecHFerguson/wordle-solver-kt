@@ -152,7 +152,7 @@ class WordleGameTest {
                     CharacterResult(letter = "l".first(), guessIndex = 1, result = NotPresent),
                     CharacterResult(letter = "e".first(), guessIndex = 2, result = NotPresent),
                     CharacterResult(letter = "a".first(), guessIndex = 3, result = NotPresent),
-                    CharacterResult(letter = "r".first(), guessIndex = 4, result = NotPresent)
+                    CharacterResult(letter = "r".first(), guessIndex = 4, result = NotPresent),
                 ),
                 solved = false
             ),
