@@ -57,14 +57,18 @@ data class LetterMap internal constructor(
 }
 
 data class LettersForSlot internal constructor(
-    var letters: MutableMap<Char, Boolean> = mutableMapOf(*('a'..'z').map { Pair(it, true) }.toTypedArray())
+    var letters: MutableMap<Char, Boolean> = mutableMapOf(*('a'..'z').map { Pair(it, true) }.toTypedArray()),
+    var solved: Boolean = false,
 ) {
     fun setExclusive(char: Char) {
         letters = mutableMapOf(Pair(char, true))
+        solved = true
     }
 
     fun remove(char: Char) {
-        letters.remove(char)
+        if (!solved) {
+            letters.remove(char)
+        }
     }
 
     fun contains(char: Char): Boolean = letters.contains(char)
