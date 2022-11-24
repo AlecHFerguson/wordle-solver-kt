@@ -39,7 +39,10 @@ open class WordlePlayerLight(
 //        }
         val guessResults = wordleGame.makeGuess(word)
         letters@ for (letter in guessResults.letters) {
-            if (letter.result is NotPresent && guessResults.letters.any { it.letter == letter.letter && it.result !is NotPresent }) {
+            if (
+                letter.result is NotPresent &&
+                guessResults.letters.any { it.letter == letter.letter && it.result is OtherSlot }
+            ) {
                 continue@letters
             }
             letterMap.updateFromResult(letter = letter)
