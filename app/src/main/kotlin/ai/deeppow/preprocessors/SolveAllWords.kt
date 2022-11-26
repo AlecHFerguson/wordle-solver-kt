@@ -18,7 +18,7 @@ fun main() {
     solveAllWords(wordTree = wordTree, averageEliminated = averageEliminated)
 }
 
-const val outputFile = "/Users/alecferguson/scratch/wordle-results/testAllCharMap.json"
+const val outputFile = "/Users/alecferguson/scratch/wordle-results/testAllVariety.json"
 
 data class TimedPlayResult(
     val word: String,

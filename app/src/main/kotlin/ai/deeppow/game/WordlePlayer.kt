@@ -31,18 +31,17 @@ class WordlePlayer(
     }
 
     internal fun getBestGuessWord(): String {
-        if (needsMoreVariety()) {
-            val varietyGuess = makeVarietyGuess()
-            if (varietyGuess != null) {
-                varietyGuessCount += 1
-                return varietyGuess
-            }
+        val varietyGuess = makeVarietyGuess()
+        if (needsMoreVariety() && varietyGuess != null) {
+            varietyGuessCount += 1
+            return varietyGuess
         }
+
         val sortedGuesses = getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
         return when (strategy) {
             is Simple -> getSimpleGuess(sortedGuesses)
             is TestAllFull -> calculateBestGuessWord(sortedGuesses)
-            is TestAllScored -> getBestGuessWordByScore(sortedGuesses)
+            is TestAllScored -> getBestGuessWordByScore(sortedGuesses, varietyGuess)
         }
     }
 
@@ -50,16 +49,17 @@ class WordlePlayer(
         return sortedGuesses.first()
     }
 
-    private fun getBestGuessWordByScore(sortedGuesses: List<String>): String {
+    private fun getBestGuessWordByScore(sortedGuesses: List<String>, varietyGuess: String?): String {
         if (sortedGuesses.count() > maxTestCount) {
             return getSimpleGuess(sortedGuesses = sortedGuesses)
         }
-        val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses)
+        val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses, varietyGuess = varietyGuess)
         return guessResults.first
     }
 
-    private fun testGuessScoreAllWords(sortedGuesses: List<String>): Pair<String, Double> {
-        val wordScores: List<Pair<String, Double>> = sortedGuesses.take(69).map { guessWord ->
+    private fun testGuessScoreAllWords(sortedGuesses: List<String>, varietyGuess: String?): Pair<String, Double> {
+        val testWords = sortedGuesses.take(69) + listOfNotNull(varietyGuess)
+        val wordScores: List<Pair<String, Double>> = testWords.map { guessWord ->
             runBlocking {
                 getScoreForWord(guessWord = guessWord, wordList = sortedGuesses, scope = this)
             }
@@ -156,7 +156,7 @@ class WordlePlayer(
     private suspend fun testForAllWords(
         scope: CoroutineScope,
         wordTree: WordTree,
-        wordList: List<String>
+        wordList: List<String>,
     ): List<Pair<String, Double>> {
         return wordList.take(10).map { guessWord ->
             scope.async {
