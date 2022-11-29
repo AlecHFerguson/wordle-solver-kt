@@ -31,17 +31,19 @@ class WordlePlayer(
     }
 
     internal fun getBestGuessWord(): String {
-        val varietyGuess = makeVarietyGuess()
-        if (needsMoreVariety() && varietyGuess != null) {
-            varietyGuessCount += 1
-            return varietyGuess
+        if (needsMoreVariety()) {
+            val varietyGuess = makeVarietyGuess()
+            if (varietyGuess != null) {
+                varietyGuessCount += 1
+                return varietyGuess
+            }
         }
 
         val sortedGuesses = getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
         return when (strategy) {
             is Simple -> getSimpleGuess(sortedGuesses)
             is TestAllFull -> calculateBestGuessWord(sortedGuesses)
-            is TestAllScored -> getBestGuessWordByScore(sortedGuesses, varietyGuess)
+            is TestAllScored -> getBestGuessWordByScore(sortedGuesses)
         }
     }
 
@@ -49,16 +51,16 @@ class WordlePlayer(
         return sortedGuesses.first()
     }
 
-    private fun getBestGuessWordByScore(sortedGuesses: List<String>, varietyGuess: String?): String {
+    private fun getBestGuessWordByScore(sortedGuesses: List<String>): String {
         if (sortedGuesses.count() > maxTestCount) {
             return getSimpleGuess(sortedGuesses = sortedGuesses)
         }
-        val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses, varietyGuess = varietyGuess)
+        val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses)
         return guessResults.first
     }
 
-    private fun testGuessScoreAllWords(sortedGuesses: List<String>, varietyGuess: String?): Pair<String, Double> {
-        val testWords = sortedGuesses.take(69) + listOfNotNull(varietyGuess)
+    private fun testGuessScoreAllWords(sortedGuesses: List<String>): Pair<String, Double> {
+        val testWords = sortedGuesses.take(69)
         val wordScores: List<Pair<String, Double>> = testWords.map { guessWord ->
             runBlocking {
                 getScoreForWord(guessWord = guessWord, wordList = sortedGuesses, scope = this)
@@ -97,28 +99,15 @@ class WordlePlayer(
     }
 
     private fun needsMoreVariety(): Boolean {
-        return getAvailableGuesses().count() > 2 && (
-            (varietyGuessCount < 1 && guesses.last().guessResult.letters.count { it.result is Correct } >= 3) ||
-                (varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4)
-            )
+        return (varietyGuessCount < 1 && guesses.last().guessResult.letters.count { it.result is Correct } >= 3) ||
+            (varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4)
     }
 
     private fun makeVarietyGuess(): String? {
-        val varietyLetters = letterMap.getVarietyLetters()
         val letterFrequencies = GenerateLetterFrequencyMap.generateFrequencyMap(getAvailableGuesses())
-        letterFrequencies.forEach { (char, count) ->
-            if (varietyLetters.containsKey(char)) {
-                varietyLetters[char] = varietyLetters[char]!! + count
-            } else {
-                varietyLetters[char] = count
-            }
-        }
         val letterWeights = mutableMapOf<Char, Double>()
-        varietyLetters.forEach { (char, count) ->
-            var letterWeight = count / letterFrequencyMap[char]!!.toDouble()
-            if (char in "aeiou".toCharArray() && !letterFrequencies.containsKey(char)) {
-                letterWeight /= 6.9
-            }
+        letterFrequencies.forEach { (char, count) ->
+            val letterWeight = count / letterFrequencyMap[char]!!.toDouble()
             letterWeights[char] = letterWeight
         }
         return wordTree.getVarietyGuess(letterWeights)
