@@ -13,7 +13,7 @@ data class AverageEliminated(
     }
 
     companion object Reader {
-        const val averageEliminatedFile = "/average-eliminated.avro"
+        private const val averageEliminatedFile = "/average-eliminated.avro"
 
         fun read(): AverageEliminated {
             val wordTreeResource = AverageEliminated::class.java.getResource(averageEliminatedFile)?.toURI()
