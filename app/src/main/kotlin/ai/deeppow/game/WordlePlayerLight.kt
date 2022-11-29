@@ -2,10 +2,10 @@ package ai.deeppow.game
 
 import ai.deeppow.models.WordNode
 import ai.deeppow.models.WordTree
-import kotlinx.coroutines.*
 
 const val bestStartWord = "lares"
 const val maxTestCount = 269
+const val maxElimTestCount = 16
 const val maxGuesses = 69
 const val guessIterations = maxGuesses - 1
 const val lastGuessIteration = guessIterations - 1
@@ -22,13 +22,13 @@ sealed interface GuessStrategy
 object Simple : GuessStrategy
 object TestAllScored : GuessStrategy
 object TestAllFull : GuessStrategy
+object Balanced : GuessStrategy
 
 open class WordlePlayerLight(
     protected val wordTree: WordTree,
     allWords: List<String>? = null,
     protected val letterMap: LetterMap = LetterMap()
 ) {
-    protected val requiredLetters: MutableMap<Char, Int> = mutableMapOf()
     private var availableGuesses: List<String> = allWords ?: wordTree.getAvailableGuesses()
     val guesses = mutableListOf<GuessAnalysis>()
     var isSolved = false
@@ -94,7 +94,7 @@ open class WordlePlayerLight(
     }
 
     private fun String.hasAllRequiredLetters(): Boolean {
-        return requiredLetters.keys.all { this.contains(it) }
+        return letterMap.requiredLetters.keys.all { this.contains(it) }
     }
 }
 

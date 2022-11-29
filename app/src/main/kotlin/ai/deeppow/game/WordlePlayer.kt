@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class WordlePlayer(
     private val avgEliminated: AverageEliminated,
-    private val strategy: GuessStrategy = TestAllFull,
+    private val strategy: GuessStrategy = Balanced,
     wordTree: WordTree = GetTree.getWordTree()
 ) : WordlePlayerLight(wordTree = wordTree) {
     private var varietyGuessCount: Int = 0
@@ -31,8 +31,9 @@ class WordlePlayer(
     }
 
     internal fun getBestGuessWord(): String {
+        var varietyGuess: String? = null
         if (needsMoreVariety()) {
-            val varietyGuess = makeVarietyGuess()
+            varietyGuess = makeVarietyGuess()
             if (varietyGuess != null) {
                 varietyGuessCount += 1
                 return varietyGuess
@@ -40,10 +41,21 @@ class WordlePlayer(
         }
 
         val sortedGuesses = getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
+        if (sortedGuesses.count() > maxTestCount) {
+            getSimpleGuess(sortedGuesses)
+        }
+
         return when (strategy) {
             is Simple -> getSimpleGuess(sortedGuesses)
             is TestAllFull -> calculateBestGuessWord(sortedGuesses)
             is TestAllScored -> getBestGuessWordByScore(sortedGuesses)
+            is Balanced -> {
+                if (sortedGuesses.count() > maxElimTestCount) {
+                    getBestGuessWordByScore(sortedGuesses)
+                } else {
+                    calculateBestGuessWord(sortedGuesses)
+                }
+            }
         }
     }
 
