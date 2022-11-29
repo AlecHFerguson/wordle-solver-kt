@@ -1,0 +1,4 @@
+[*.{kt,kts}]
+ktlint_disabled_rules = no-wildcard-imports
+max_line_length = 120
+no_unused_imports = true
