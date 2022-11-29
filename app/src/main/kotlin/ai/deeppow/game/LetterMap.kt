@@ -26,12 +26,14 @@ data class LetterMap internal constructor(
         return letters[index]
     }
 
-    fun getVarietyLetters(): MutableMap<Char, Int> {
-        val varietyColumns = letters.values.filter { it.letters.keys.count() > 1 }
+    fun getVarietyLetters(): Map<Char, Int> {
+        val varietyColumns = letters.values.filterNot { it.solved }
         val varietyLetters = mutableMapOf<Char, Int>()
         for (column in varietyColumns) {
             column.letters.keys.forEach {
-                if (!requiredLetters.containsKey(it)) {
+                if (requiredLetters.containsKey(it)) {
+                    varietyLetters[it] = 10
+                } else {
                     varietyLetters[it] = 1
                 }
             }

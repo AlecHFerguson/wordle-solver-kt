@@ -17,8 +17,8 @@ class WordlePlayerTest {
         player.makeGuess("stone", game)
         val guesses = player.guesses
         assertEquals(1, guesses.count())
-        assertEquals(102, guesses.first().remainingCount)
-        assertEquals(14753, guesses.first().eliminatedCount)
+        assertEquals(20, guesses.first().remainingCount)
+        assertEquals(14835, guesses.first().eliminatedCount)
     }
 
     @Test
@@ -38,7 +38,7 @@ class WordlePlayerTest {
 
     @Test
     fun testSolve() {
-        val player = WordlePlayer(avgEliminated = AverageEliminated.read(), strategy = TestAllScored)
+        val player = WordlePlayer(avgEliminated = AverageEliminated.read())
         // zines, jests, vired, zaxes, fucks, draws, jeeps, zeals, babes, funks, wants, wired
         val time = measureTimeMillis { player.solveForWord(WordleGame("skier")) }
         println("Solved = ${player.isSolved}, remaining guesses = ${player.getAvailableGuesses()}, time = $time")
