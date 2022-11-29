@@ -1,7 +1,7 @@
 package ai.deeppow.pipelines.transforms
 
 import ai.deeppow.game.WordleGame
-import ai.deeppow.game.WordlePlayerLight
+import ai.deeppow.game.WordleSolverLight
 import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
@@ -21,7 +21,7 @@ class GetWordsEliminated : DoFn<GuessCombo, WordsEliminated>() {
 
     @ProcessElement
     fun processElement(@Element element: GuessCombo, context: ProcessContext) {
-        val player = WordlePlayerLight(wordTree = wordTree, allWords = allWords)
+        val player = WordleSolverLight(wordTree = wordTree, allWords = allWords)
         val wordleGame = WordleGame(element.gameWord)
         player.makeGuess(word = element.guessWord, wordleGame = wordleGame)
 

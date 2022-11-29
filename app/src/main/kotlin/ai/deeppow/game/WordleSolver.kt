@@ -5,11 +5,11 @@ import ai.deeppow.preprocessors.GenerateLetterFrequencyMap
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class WordlePlayer(
+class WordleSolver(
     private val avgEliminated: AverageEliminated,
     private val strategy: GuessStrategy = Balanced,
     wordTree: WordTree = GetTree.getWordTree()
-) : WordlePlayerLight(wordTree = wordTree) {
+) : WordleSolverLight(wordTree = wordTree) {
     private var varietyGuessCount: Int = 0
 
     fun solveForWord(wordleGame: WordleGame): Boolean {
@@ -174,7 +174,7 @@ class WordlePlayer(
         val recordCount = AtomicInteger(0)
         wordList.map { gameWord ->
             scope.launch {
-                val player = WordlePlayerLight(
+                val player = WordleSolverLight(
                     wordTree = wordTree,
                     allWords = wordList,
                     letterMap = letterMap.deepCopy()

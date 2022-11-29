@@ -2,7 +2,7 @@ package ai.deeppow.preprocessors
 
 import ai.deeppow.game.GuessSequence
 import ai.deeppow.game.WordleGame
-import ai.deeppow.game.WordlePlayerLight
+import ai.deeppow.game.WordleSolverLight
 import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordTree
 import ai.deeppow.models.getAllWords
@@ -13,7 +13,7 @@ object GenerateBestGuess {
         val wordTree = getWordTree()
 
         val guessSequences: List<GuessSequence> = wordTree.getAllWords().flatMap {
-            val player = WordlePlayerLight(wordTree = wordTree)
+            val player = WordleSolverLight(wordTree = wordTree)
             it.playWordle(wordTree, game, player)
         }
         val topGuessSequences = guessSequences.sortedWith(
@@ -25,7 +25,7 @@ object GenerateBestGuess {
     private fun String.playWordle(
         wordTree: WordTree,
         game: WordleGame,
-        player: WordlePlayerLight
+        player: WordleSolverLight
     ): List<GuessSequence> {
         val guessSequences = mutableListOf<GuessSequence>()
         if (player.guesses.count() < 6) {

@@ -1,7 +1,7 @@
 package ai.deeppow.preprocessors
 
 import ai.deeppow.game.WordleGame
-import ai.deeppow.game.WordlePlayerLight
+import ai.deeppow.game.WordleSolverLight
 import ai.deeppow.io.Avro.writeToAvro
 import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.GetTree
@@ -49,7 +49,7 @@ object GenerateAverageEliminatedMap {
         val recordCount = AtomicInteger(0)
         wordList.map { gameWord ->
             scope.launch {
-                val player = WordlePlayerLight(wordTree = wordTree, allWords = wordList)
+                val player = WordleSolverLight(wordTree = wordTree, allWords = wordList)
                 val wordleGame = WordleGame(gameWord)
                 player.makeGuess(word = guessWord, wordleGame = wordleGame)
                 runningTotal.addAndGet(player.guesses.first().eliminatedCount)
