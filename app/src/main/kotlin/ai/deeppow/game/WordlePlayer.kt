@@ -31,9 +31,8 @@ class WordlePlayer(
     }
 
     internal fun getBestGuessWord(): String {
-        var varietyGuess: String? = null
         if (needsMoreVariety()) {
-            varietyGuess = makeVarietyGuess()
+            val varietyGuess = makeVarietyGuess()
             if (varietyGuess != null) {
                 varietyGuessCount += 1
                 return varietyGuess
