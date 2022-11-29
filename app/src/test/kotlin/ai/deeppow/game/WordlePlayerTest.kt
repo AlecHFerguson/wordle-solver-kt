@@ -40,7 +40,7 @@ class WordlePlayerTest {
     fun testSolve() {
         val player = WordlePlayer(avgEliminated = AverageEliminated.read())
         // zines, jests, vired, zaxes, fucks, draws, jeeps, zeals, babes, funks, wants, wired
-        val time = measureTimeMillis { player.solveForWord(WordleGame("faxes")) }
+        val time = measureTimeMillis { player.solveForWord(WordleGame("skier")) }
         println("Solved = ${player.isSolved}, remaining guesses = ${player.getAvailableGuesses()}, time = $time")
     }
 }
