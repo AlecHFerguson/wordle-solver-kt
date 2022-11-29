@@ -99,8 +99,7 @@ class WordlePlayer(
     }
 
     private fun needsMoreVariety(): Boolean {
-        return (varietyGuessCount < 1 && guesses.last().guessResult.letters.count { it.result is Correct } >= 3) ||
-            (varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4)
+        return varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4
     }
 
     private fun makeVarietyGuess(): String? {
@@ -127,7 +126,7 @@ class WordlePlayer(
     }
 
     private fun WordNode.getVarietyGuess(letterWeights: Map<Char, Double>): String? {
-        if (isLeafWord) {
+        if (isLeafWord && wordSoFar.toCharArray().count { !letterMap.requiredLetters.containsKey(it) } > 1) {
             return wordSoFar
         }
         nextWords.values.filter { letterWeights.containsKey(it.character) }
