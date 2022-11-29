@@ -38,9 +38,9 @@ class WordleSolverTest {
 
     @Test
     fun testSolve() {
-        val player = WordleSolver(avgEliminated = AverageEliminated.read())
+        val solver = WordleSolver(avgEliminated = AverageEliminated.read())
         // zines, jests, vired, zaxes, fucks, draws, jeeps, zeals, babes, funks, wants, wired
-        val time = measureTimeMillis { player.solveForWord(WordleGame("skier")) }
-        println("Solved = ${player.isSolved}, remaining guesses = ${player.getAvailableGuesses()}, time = $time")
+        val time = measureTimeMillis { solver.solveForWord(WordleGame("skier")) }
+        println("Solved = ${solver.isSolved}, remaining guesses = ${solver.getAvailableGuesses()}, time = $time")
     }
 }
