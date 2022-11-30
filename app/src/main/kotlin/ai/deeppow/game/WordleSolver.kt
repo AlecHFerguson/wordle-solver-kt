@@ -5,8 +5,8 @@ import ai.deeppow.preprocessors.GenerateLetterFrequencyMap
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 
-class WordleSolver(
-    private val avgEliminated: AverageEliminated,
+open class WordleSolver(
+    private val avgEliminated: AverageEliminated = AverageEliminated.read(),
     private val strategy: GuessStrategy = Balanced,
     wordTree: WordTree = GetTree.getWordTree()
 ) : WordleSolverLight(wordTree = wordTree) {
@@ -39,7 +39,7 @@ class WordleSolver(
             }
         }
 
-        val sortedGuesses = getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
+        val sortedGuesses = getSortedGuesses()
         if (sortedGuesses.count() > maxTestCount) {
             getSimpleGuess(sortedGuesses)
         }
@@ -56,6 +56,10 @@ class WordleSolver(
                 }
             }
         }
+    }
+
+    protected fun getSortedGuesses(): List<String> {
+        return getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
     }
 
     private fun getSimpleGuess(sortedGuesses: List<String>): String {
@@ -152,7 +156,7 @@ class WordleSolver(
         return null
     }
 
-    private suspend fun testForAllWords(
+    protected suspend fun testForAllWords(
         scope: CoroutineScope,
         wordTree: WordTree,
         wordList: List<String>,

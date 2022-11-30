@@ -20,6 +20,11 @@ private data class CharResultIntermediate(
     fun toCharacterResult() = CharacterResult(letter = letter, guessIndex = guessIndex, result = result)
 }
 
+private const val ANSI_GREEN_BACKGROUND = "\u001B[42m"
+private const val ANSI_YELLOW_BACKGROUND = "\u001B[43m"
+private const val ANSI_WHITE_BACKGROUND = "\u001B[47m"
+private const val ANSI_RESET = "\u001B[0m"
+
 data class GuessResult(
     val guess: String,
     val letters: List<CharacterResult>,
@@ -32,6 +37,18 @@ data class GuessResult(
                 is OtherSlot -> 1
                 is NotPresent -> 0
             }
+        }
+    }
+
+    override fun toString(): String {
+        return letters.joinToString(separator = "") { it.toColorString() }
+    }
+
+    private fun CharacterResult.toColorString(): String {
+        return when (result) {
+            is Correct -> "$ANSI_GREEN_BACKGROUND$letter$ANSI_RESET"
+            is OtherSlot -> "$ANSI_YELLOW_BACKGROUND$letter$ANSI_RESET"
+            is NotPresent -> "$ANSI_WHITE_BACKGROUND$letter$ANSI_RESET"
         }
     }
 }

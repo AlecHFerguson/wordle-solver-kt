@@ -1,4 +1,4 @@
-package ai.deeppow
+package ai.deeppow.cli
 
 import ai.deeppow.game.GuessAnalysis
 import ai.deeppow.game.WordleGame
@@ -9,8 +9,7 @@ import ai.deeppow.models.WordTree
 import java.util.*
 
 object SolveWordle {
-    @JvmStatic
-    fun main(args: Array<String>) {
+    fun solve() {
         val wordTree = GetTree.getWordTree()
         val gameWord = parseWord(wordTree)
         val solver = WordleSolver(avgEliminated = AverageEliminated.read())

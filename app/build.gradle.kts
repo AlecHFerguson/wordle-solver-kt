@@ -127,8 +127,8 @@ task(name = "CreateMostEliminatedPipeline", type = JavaExec::class) {
     )
 }
 
-task(name = "Solve", type = JavaExec::class) {
+task(name = "Wordle", type = JavaExec::class) {
     classpath = sourceSets["main"].runtimeClasspath
-    main = "ai.deeppow.SolveWordle"
+    main = "ai.deeppow.App"
     standardInput = System.`in`
 }
