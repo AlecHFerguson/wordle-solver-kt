@@ -8,7 +8,7 @@ class WordlePlayer : WordleSolver() {
     var sparseHint = true
     val wordleGame = WordleGame(gameWord = wordTree.getRandomWord())
 
-    fun playWord(guessWord: String): String {
+    fun playWord(guessWord: String) {
         sparseHint = true
         repeat(25) {
             val wordNode = wordTree.getWord(guessWord)
@@ -16,7 +16,7 @@ class WordlePlayer : WordleSolver() {
                 println("Invalid word $guessWord; please guess a valid 5 letter word")
             } else {
                 makeGuess(word = guessWord, wordleGame = wordleGame)
-                return guesses.last().guessResult.toString()
+                return println("${guesses.last().guessResult}\n")
             }
         }
         throw WordlePlayerException("Invalid guess $guessWord")
