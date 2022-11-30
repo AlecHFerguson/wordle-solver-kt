@@ -48,12 +48,7 @@ object SolveWordle {
         } else {
             "Eliminated ${guess.eliminatedCount} guesses, ${guess.remainingCount} guesses remaining."
         }
-        println(
-            "${guess.word} => $resultStr"
-        )
-        guess.guessResult.letters.forEach { charResult ->
-            println("  * ${charResult.letter} -- ${charResult.result::class.simpleName}")
-        }
+        println("${guess.guessResult} => $resultStr")
         println("")
     }
 

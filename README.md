@@ -23,6 +23,11 @@ sdk install gradle 7.5.1
 ./gradlew test
 ```
 
+### Play and Solve
+```shell
+./gradlew Wordle
+```
+
 ## How It Works
 ### 1. Generate Average Eliminated Per Word
 We need a "best word" to guess with at first. As an offline process, try each word as an opening guess word against
