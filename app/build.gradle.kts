@@ -126,3 +126,9 @@ task(name = "CreateMostEliminatedPipeline", type = JavaExec::class) {
         "--stagingLocation=gs://deeppow-dataflow-templates/staging/CreateMostEliminatedPipeline"
     )
 }
+
+task(name = "Wordle", type = JavaExec::class) {
+    classpath = sourceSets["main"].runtimeClasspath
+    main = "ai.deeppow.App"
+    standardInput = System.`in`
+}

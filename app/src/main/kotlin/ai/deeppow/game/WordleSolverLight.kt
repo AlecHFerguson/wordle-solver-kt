@@ -24,7 +24,7 @@ object TestAllScored : GuessStrategy
 object TestAllFull : GuessStrategy
 object Balanced : GuessStrategy
 
-open class WordlePlayerLight(
+open class WordleSolverLight(
     protected val wordTree: WordTree,
     allWords: List<String>? = null,
     protected val letterMap: LetterMap = LetterMap()
@@ -33,7 +33,7 @@ open class WordlePlayerLight(
     val guesses = mutableListOf<GuessAnalysis>()
     var isSolved = false
 
-    fun makeGuess(word: String, wordleGame: WordleGame): WordlePlayerLight {
+    fun makeGuess(word: String, wordleGame: WordleGame): WordleSolverLight {
 //        if (wordTree.getWord(word) == null) {
 //            throw WordlePlayerException("$word not found in dictionary")
 //        }

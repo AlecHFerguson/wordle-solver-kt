@@ -8,12 +8,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class WordlePlayerTest {
+class WordleSolverTest {
     @Test
     fun playForMismatch() {
         val game = WordleGame("snowy")
         val wordTree = getWordTree()
-        val player = WordlePlayerLight(wordTree)
+        val player = WordleSolverLight(wordTree)
         player.makeGuess("stone", game)
         val guesses = player.guesses
         assertEquals(1, guesses.count())
@@ -29,7 +29,7 @@ class WordlePlayerTest {
 
         val time = measureTimeMillis {
             repeat(1000) {
-                val player = WordlePlayerLight(wordTree, allWords)
+                val player = WordleSolverLight(wordTree, allWords)
                 player.makeGuess("soapy", game)
             }
         }
@@ -38,9 +38,9 @@ class WordlePlayerTest {
 
     @Test
     fun testSolve() {
-        val player = WordlePlayer(avgEliminated = AverageEliminated.read())
+        val solver = WordleSolver(avgEliminated = AverageEliminated.read())
         // zines, jests, vired, zaxes, fucks, draws, jeeps, zeals, babes, funks, wants, wired
-        val time = measureTimeMillis { player.solveForWord(WordleGame("skier")) }
-        println("Solved = ${player.isSolved}, remaining guesses = ${player.getAvailableGuesses()}, time = $time")
+        val time = measureTimeMillis { solver.solveForWord(WordleGame("skier")) }
+        println("Solved = ${solver.isSolved}, remaining guesses = ${solver.getAvailableGuesses()}, time = $time")
     }
 }

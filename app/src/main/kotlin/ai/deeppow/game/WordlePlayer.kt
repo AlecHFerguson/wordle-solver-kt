@@ -1,191 +1,73 @@
 package ai.deeppow.game
 
-import ai.deeppow.models.*
-import ai.deeppow.preprocessors.GenerateLetterFrequencyMap
-import kotlinx.coroutines.*
-import java.util.concurrent.atomic.AtomicInteger
+import ai.deeppow.models.WordNode
+import ai.deeppow.models.WordTree
+import kotlinx.coroutines.runBlocking
 
-class WordlePlayer(
-    private val avgEliminated: AverageEliminated,
-    private val strategy: GuessStrategy = Balanced,
-    wordTree: WordTree = GetTree.getWordTree()
-) : WordlePlayerLight(wordTree = wordTree) {
-    private var varietyGuessCount: Int = 0
+class WordlePlayer : WordleSolver() {
+    var sparseHint = true
+    val wordleGame = WordleGame(gameWord = wordTree.getRandomWord())
 
-    fun solveForWord(wordleGame: WordleGame): Boolean {
-        makeGuess(word = bestStartWord, wordleGame = wordleGame)
-        if (isSolved) {
-            return true
-        }
-        repeat(guessIterations) {
-            if (it == lastGuessIteration) {
-                varietyGuessCount = 69
-            }
-            val guessWord = getBestGuessWord()
+    fun playWord(guessWord: String) {
+        sparseHint = true
+        val wordNode = wordTree.getWord(guessWord)
+        if (wordNode == null) {
+            println("Invalid word $guessWord; please guess a valid 5 letter word")
+        } else {
             makeGuess(word = guessWord, wordleGame = wordleGame)
-            if (isSolved) {
-                return true
-            }
-        }
-        return false
-    }
-
-    internal fun getBestGuessWord(): String {
-        if (needsMoreVariety()) {
-            val varietyGuess = makeVarietyGuess()
-            if (varietyGuess != null) {
-                varietyGuessCount += 1
-                return varietyGuess
-            }
-        }
-
-        val sortedGuesses = getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
-        if (sortedGuesses.count() > maxTestCount) {
-            getSimpleGuess(sortedGuesses)
-        }
-
-        return when (strategy) {
-            is Simple -> getSimpleGuess(sortedGuesses)
-            is TestAllFull -> calculateBestGuessWord(sortedGuesses)
-            is TestAllScored -> getBestGuessWordByScore(sortedGuesses)
-            is Balanced -> {
-                if (sortedGuesses.count() > maxElimTestCount) {
-                    getBestGuessWordByScore(sortedGuesses)
-                } else {
-                    calculateBestGuessWord(sortedGuesses)
-                }
-            }
+            return println("${guesses.last().guessResult}\n")
         }
     }
 
-    private fun getSimpleGuess(sortedGuesses: List<String>): String {
-        return sortedGuesses.first()
-    }
-
-    private fun getBestGuessWordByScore(sortedGuesses: List<String>): String {
-        if (sortedGuesses.count() > maxTestCount) {
-            return getSimpleGuess(sortedGuesses = sortedGuesses)
+    fun getHint(): String {
+        val sortedGuesses = getSortedGuesses()
+        if (sparseHint) {
+            val fiveGuesses = sortedGuesses.take(5)
+            sparseHint = false
+            return "Top 5 guesses: ${fiveGuesses.joinToString(", ")}"
         }
-        val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses)
-        return guessResults.first
+        val scoredGuesses = getScoredGuesses(sortedGuesses)
+        return "Scored guesses: $scoredGuesses"
     }
 
-    private fun testGuessScoreAllWords(sortedGuesses: List<String>): Pair<String, Double> {
-        val testWords = sortedGuesses.take(69)
-        val wordScores: List<Pair<String, Double>> = testWords.map { guessWord ->
-            runBlocking {
-                getScoreForWord(guessWord = guessWord, wordList = sortedGuesses, scope = this)
-            }
+    fun showResults() {
+        guesses.forEach { guess ->
+            println("${guess.word} => ${guess.guessResult}")
+            println(" * eliminatedCount = ${guess.eliminatedCount}")
+            println(" * remainingCount = ${guess.remainingCount}")
+            println(" * availableGuesses = ${guess.availableGuesses.take(11)}")
         }
-        return wordScores.maxBy { it.second }
     }
 
-    private suspend fun getScoreForWord(
-        guessWord: String,
-        wordList: List<String>,
-        scope: CoroutineScope
-    ): Pair<String, Double> {
-        val runningTotal = AtomicInteger(0)
-        val recordCount = AtomicInteger(0)
-        wordList.map { gameWord ->
-            scope.async {
-                val wordleGame = WordleGame(gameWord)
-                val result = wordleGame.makeGuess(guessWord)
-                runningTotal.addAndGet(result.getScore())
-                recordCount.incrementAndGet()
-            }
-        }.awaitAll()
-        val avg = (runningTotal.get().toDouble() / recordCount.get())
-        return guessWord to avg
-    }
-
-    private fun calculateBestGuessWord(availableGuesses: List<String>): String {
-        if (availableGuesses.count() > maxTestCount) {
-            return getSimpleGuess(sortedGuesses = availableGuesses)
-        }
+    private fun getScoredGuesses(sortedGuesses: List<String>): List<Pair<String, Double>> {
         val guessResults = runBlocking {
-            testForAllWords(wordTree = wordTree, scope = this, wordList = availableGuesses)
+            testForAllWords(wordTree = wordTree, scope = this, wordList = sortedGuesses)
         }
-        return guessResults.maxBy { it.second }.first
+        return guessResults.sortedByDescending { it.second }.take(5)
     }
 
-    private fun needsMoreVariety(): Boolean {
-        return varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4
-    }
-
-    private fun makeVarietyGuess(): String? {
-        val letterFrequencies = GenerateLetterFrequencyMap.generateFrequencyMap(getAvailableGuesses())
-        val letterWeights = mutableMapOf<Char, Double>()
-        letterFrequencies.forEach { (char, count) ->
-            val letterWeight = count / letterFrequencyMap[char]!!.toDouble()
-            letterWeights[char] = letterWeight
-        }
-        return wordTree.getVarietyGuess(letterWeights)
-    }
-
-    private fun WordTree.getVarietyGuess(letterWeights: Map<Char, Double>): String? {
-        wordMap.values.filter { letterWeights.containsKey(it.character) }
-            .sortedBy { letterWeights[it.character] }.forEach { wordNode ->
-                val newLetterFrequencies = letterWeights.toMutableMap()
-                newLetterFrequencies.remove(wordNode.character)
-                val foundWord = wordNode.getVarietyGuess(newLetterFrequencies)
-                if (foundWord != null) {
-                    return foundWord
-                }
+    private fun WordTree.getRandomWord(): String {
+        wordMap.keys.shuffled().forEach { char ->
+            val word = wordMap[char]?.getRandomWord()
+            if (word != null) {
+                return word
             }
-        return null
+        }
+        throw WordlePlayerException("Unable to find a game word, please investigate")
     }
 
-    private fun WordNode.getVarietyGuess(letterWeights: Map<Char, Double>): String? {
-        if (isLeafWord && wordSoFar.toCharArray().count { !letterMap.requiredLetters.containsKey(it) } > 1) {
+    private fun WordNode.getRandomWord(): String? {
+        if (isLeafWord) {
             return wordSoFar
         }
-        nextWords.values.filter { letterWeights.containsKey(it.character) }
-            .sortedBy { letterWeights[it.character] }.forEach { wordNode ->
-                val newLetterFrequencies = letterWeights.toMutableMap()
-                newLetterFrequencies.remove(wordNode.character)
-                val foundWord = wordNode.getVarietyGuess(newLetterFrequencies)
-                if (foundWord != null) {
-                    return foundWord
-                }
+        nextWords.keys.shuffled().forEach { char ->
+            val word = nextWords[char]?.getRandomWord()
+            if (word != null) {
+                return word
             }
+        }
         return null
     }
-
-    private suspend fun testForAllWords(
-        scope: CoroutineScope,
-        wordTree: WordTree,
-        wordList: List<String>,
-    ): List<Pair<String, Double>> {
-        return wordList.take(10).map { guessWord ->
-            scope.async {
-                testAllForWord(scope = scope, guessWord = guessWord, wordList = wordList, wordTree = wordTree)
-            }
-        }.awaitAll()
-    }
-
-    private suspend fun testAllForWord(
-        scope: CoroutineScope,
-        guessWord: String,
-        wordList: List<String>,
-        wordTree: WordTree
-    ): Pair<String, Double> {
-        val runningTotal = AtomicInteger(0)
-        val recordCount = AtomicInteger(0)
-        wordList.map { gameWord ->
-            scope.launch {
-                val player = WordlePlayerLight(
-                    wordTree = wordTree,
-                    allWords = wordList,
-                    letterMap = letterMap.deepCopy()
-                )
-                val wordleGame = WordleGame(gameWord)
-                player.makeGuess(word = guessWord, wordleGame = wordleGame)
-                runningTotal.addAndGet(player.guesses.first().eliminatedCount)
-                recordCount.incrementAndGet()
-            }
-        }.joinAll()
-        val avg = (runningTotal.get().toDouble() / recordCount.get())
-        return guessWord to avg
-    }
 }
+
+class WordlePlayerException(message: String) : Exception(message)
