@@ -99,6 +99,16 @@ internal class WordTreeTest {
     }
 
     @Test
+    fun testGetWord() {
+        val wordTree = getWordTree()
+        val validResult = wordTree.getWord("skier")
+        assertEquals(validResult, WordNode(character = "r".single(), wordSoFar = "skier", isLeafWord = true))
+
+        val invalidResult = wordTree.getWord("ski")
+        assertEquals(invalidResult, null)
+    }
+
+    @Test
     fun testBenchmarkGetAllWords() {
         val wordTree = getWordTree()
         val time = measureTimeMillis {

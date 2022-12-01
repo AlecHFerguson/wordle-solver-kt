@@ -29,7 +29,7 @@ data class WordNode(
         if (key != null) {
             val wordNode = nextWords[key] ?: return null
             val followingCharacters = chars.slice(1..chars.lastIndex)
-            if (followingCharacters.isEmpty()) {
+            if (wordNode.isLeafWord && followingCharacters.isEmpty()) {
                 return wordNode
             }
             return wordNode.getWord(followingCharacters)
@@ -60,7 +60,7 @@ data class WordTree(val wordMap: LinkedHashMap<Char, WordNode> = LinkedHashMap()
         val firstCharacter = characters.firstOrNull()
         if (firstCharacter != null) {
             val followingCharacters = characters.slice(1..characters.lastIndex)
-            if (followingCharacters.isEmpty()) {
+            if (wordMap[firstCharacter]?.isLeafWord == true && followingCharacters.isEmpty()) {
                 return wordMap[firstCharacter]
             }
             return wordMap[firstCharacter]?.getWord(followingCharacters)

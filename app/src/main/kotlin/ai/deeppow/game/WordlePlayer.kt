@@ -10,16 +10,13 @@ class WordlePlayer : WordleSolver() {
 
     fun playWord(guessWord: String) {
         sparseHint = true
-        repeat(25) {
-            val wordNode = wordTree.getWord(guessWord)
-            if (wordNode == null) {
-                println("Invalid word $guessWord; please guess a valid 5 letter word")
-            } else {
-                makeGuess(word = guessWord, wordleGame = wordleGame)
-                return println("${guesses.last().guessResult}\n")
-            }
+        val wordNode = wordTree.getWord(guessWord)
+        if (wordNode == null) {
+            println("Invalid word $guessWord; please guess a valid 5 letter word")
+        } else {
+            makeGuess(word = guessWord, wordleGame = wordleGame)
+            return println("${guesses.last().guessResult}\n")
         }
-        throw WordlePlayerException("Invalid guess $guessWord")
     }
 
     fun getHint(): String {
@@ -46,7 +43,7 @@ class WordlePlayer : WordleSolver() {
         val guessResults = runBlocking {
             testForAllWords(wordTree = wordTree, scope = this, wordList = sortedGuesses)
         }
-        return guessResults.sortedBy { it.second }.take(5)
+        return guessResults.sortedByDescending { it.second }.take(5)
     }
 
     private fun WordTree.getRandomWord(): String {
