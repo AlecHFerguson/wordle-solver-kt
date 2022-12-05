@@ -4,9 +4,9 @@ import ai.deeppow.models.WordNode
 import ai.deeppow.models.WordTree
 import kotlinx.coroutines.runBlocking
 
-class WordlePlayer : WordleSolver() {
-    var sparseHint = true
-    val wordleGame = WordleGame(gameWord = wordTree.getRandomWord())
+class WordlePlayer(gameWord: String? = null) : WordleSolver() {
+    private var sparseHint = true
+    private val wordleGame = WordleGame(gameWord = gameWord ?: wordTree.getRandomWord())
 
     fun playWord(guessWord: String) {
         sparseHint = true

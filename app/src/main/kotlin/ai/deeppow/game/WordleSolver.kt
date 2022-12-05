@@ -41,7 +41,7 @@ open class WordleSolver(
 
         val sortedGuesses = getSortedGuesses()
         if (sortedGuesses.count() > maxTestCount) {
-            getSimpleGuess(sortedGuesses)
+            return getSimpleGuess(sortedGuesses)
         }
 
         return when (strategy) {
@@ -67,9 +67,6 @@ open class WordleSolver(
     }
 
     private fun getBestGuessWordByScore(sortedGuesses: List<String>): String {
-        if (sortedGuesses.count() > maxTestCount) {
-            return getSimpleGuess(sortedGuesses = sortedGuesses)
-        }
         val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses)
         return guessResults.first
     }
@@ -104,9 +101,6 @@ open class WordleSolver(
     }
 
     private fun calculateBestGuessWord(availableGuesses: List<String>): String {
-        if (availableGuesses.count() > maxTestCount) {
-            return getSimpleGuess(sortedGuesses = availableGuesses)
-        }
         val guessResults = runBlocking {
             testForAllWords(wordTree = wordTree, scope = this, wordList = availableGuesses)
         }

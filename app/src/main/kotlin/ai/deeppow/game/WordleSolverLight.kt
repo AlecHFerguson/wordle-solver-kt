@@ -5,7 +5,7 @@ import ai.deeppow.models.WordTree
 
 const val bestStartWord = "lares"
 const val maxTestCount = 269
-const val maxElimTestCount = 16
+const val maxElimTestCount = 26
 const val maxGuesses = 69
 const val guessIterations = maxGuesses - 1
 const val lastGuessIteration = guessIterations - 1

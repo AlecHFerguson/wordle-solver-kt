@@ -9,36 +9,47 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class WordleSolverTest {
+    val avgEliminated = AverageEliminated.read()
+
     @Test
-    fun playForMismatch() {
-        val game = WordleGame("snowy")
-        val wordTree = getWordTree()
-        val player = WordleSolverLight(wordTree)
-        player.makeGuess("stone", game)
-        val guesses = player.guesses
-        assertEquals(1, guesses.count())
-        assertEquals(20, guesses.first().remainingCount)
-        assertEquals(14835, guesses.first().eliminatedCount)
+    fun testSimpleStrategy() {
+        val solver = WordleSolver(avgEliminated = avgEliminated)
+        // This guess eliminates so few that simple strategy is chosen
+        solver.makeGuess("titan", WordleGame("momos"))
+        val guessWord = solver.getBestGuessWord()
+        assertEquals("lores", guessWord)
     }
 
     @Test
-    fun benchmarkPlay() {
-        val wordTree = getWordTree()
-        val allWords = wordTree.getAllWords()
-        val game = WordleGame("power")
+    fun testScoredStrategy() {
+        val solver = WordleSolver(avgEliminated = avgEliminated)
+        // This guess eliminates enough guesses that scored strategy is chosen
+        solver.makeGuess("lores", WordleGame("skier"))
+        val guessWord = solver.getBestGuessWord()
+        assertEquals("saser", guessWord)
+    }
 
-        val time = measureTimeMillis {
-            repeat(1000) {
-                val player = WordleSolverLight(wordTree, allWords)
-                player.makeGuess("soapy", game)
-            }
-        }
-        assertTrue { time < 700 }
+    @Test
+    fun testFullStrategy() {
+        val solver = WordleSolver(avgEliminated = avgEliminated)
+        // This guess eliminates enough guesses that full strategy is chosen
+        solver.makeGuess("skimp", WordleGame("skier"))
+        val guessWord = solver.getBestGuessWord()
+        assertEquals("skies", guessWord)
+    }
+
+    @Test
+    fun testVarietyGuess() {
+        val solver = WordleSolver(avgEliminated = avgEliminated)
+        // This guess eliminates enough guesses that full strategy is chosen
+        solver.makeGuess("dates", WordleGame("rates"))
+        val guessWord = solver.getBestGuessWord()
+        assertEquals("rybat", guessWord)
     }
 
     @Test
     fun testSolve() {
-        val solver = WordleSolver(avgEliminated = AverageEliminated.read())
+        val solver = WordleSolver(avgEliminated = avgEliminated)
         // zines, jests, vired, zaxes, fucks, draws, jeeps, zeals, babes, funks, wants, wired
         val time = measureTimeMillis { solver.solveForWord(WordleGame("skier")) }
         println("Solved = ${solver.isSolved}, remaining guesses = ${solver.getAvailableGuesses()}, time = $time")
