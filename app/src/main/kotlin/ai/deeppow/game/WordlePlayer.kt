@@ -8,35 +8,34 @@ class WordlePlayer(gameWord: String? = null) : WordleSolver() {
     private var sparseHint = true
     private val wordleGame = WordleGame(gameWord = gameWord ?: wordTree.getRandomWord())
 
-    fun playWord(guessWord: String) {
+    fun playWord(guessWord: String): List<String> {
         sparseHint = true
-        val wordNode = wordTree.getWord(guessWord)
-        if (wordNode == null) {
-            println("Invalid word $guessWord; please guess a valid 5 letter word")
-        } else {
-            makeGuess(word = guessWord, wordleGame = wordleGame)
-            return println("${guesses.last().guessResult}\n")
-        }
+        wordTree.getWord(guessWord)
+            ?: return listOf("Invalid word $guessWord; please guess a valid 5 letter word")
+        makeGuess(word = guessWord, wordleGame = wordleGame)
+        return listOf("${guesses.last().guessResult}\n")
     }
 
-    fun getHint(): String {
+    fun getHint(): List<String> {
         val sortedGuesses = getSortedGuesses()
         if (sparseHint) {
             val fiveGuesses = sortedGuesses.take(5)
             sparseHint = false
-            return "Top 5 guesses: ${fiveGuesses.joinToString(", ")}"
+            return listOf("Top 5 guesses: ${fiveGuesses.joinToString(", ")}")
         }
         val scoredGuesses = getScoredGuesses(sortedGuesses)
-        return "Scored guesses: $scoredGuesses"
+        return listOf("Scored guesses: $scoredGuesses")
     }
 
-    fun showResults() {
+    fun showResults(): List<String> {
+        val outputLines = mutableListOf<String>()
         guesses.forEach { guess ->
-            println("${guess.word} => ${guess.guessResult}")
-            println(" * eliminatedCount = ${guess.eliminatedCount}")
-            println(" * remainingCount = ${guess.remainingCount}")
-            println(" * availableGuesses = ${guess.availableGuesses.take(11)}")
+            outputLines.add("${guess.word} => ${guess.guessResult}")
+            outputLines.add(" * eliminatedCount = ${guess.eliminatedCount}")
+            outputLines.add(" * remainingCount = ${guess.remainingCount}")
+            outputLines.add(" * availableGuesses = ${guess.availableGuesses.take(11)}")
         }
+        return outputLines
     }
 
     private fun getScoredGuesses(sortedGuesses: List<String>): List<Pair<String, Double>> {

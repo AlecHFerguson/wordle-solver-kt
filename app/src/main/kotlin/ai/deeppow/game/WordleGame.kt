@@ -20,10 +20,10 @@ private data class CharResultIntermediate(
     fun toCharacterResult() = CharacterResult(letter = letter, guessIndex = guessIndex, result = result)
 }
 
-private const val ANSI_GREEN_BACKGROUND = "\u001B[42m"
-private const val ANSI_YELLOW_BACKGROUND = "\u001B[43m"
-private const val ANSI_WHITE_BACKGROUND = "\u001B[47m"
-private const val ANSI_RESET = "\u001B[0m"
+internal const val ANSI_GREEN_BACKGROUND = "\u001B[42m"
+internal const val ANSI_YELLOW_BACKGROUND = "\u001B[43m"
+internal const val ANSI_WHITE_BACKGROUND = "\u001B[47m"
+internal const val ANSI_RESET = "\u001B[0m"
 
 data class GuessResult(
     val guess: String,
