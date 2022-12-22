@@ -71,6 +71,7 @@ dependencies {
 
     // Use the Kotlin test library.
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.apache.beam:beam-runners-direct-java:$beamVersion")
 }
 
 application {
@@ -81,6 +82,7 @@ application {
 tasks.test {
     useJUnitPlatform()
 
+    finalizedBy(tasks.jacocoTestCoverageVerification)
     finalizedBy(tasks.jacocoTestReport)
 }
 
@@ -100,7 +102,7 @@ tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = "0.5".toBigDecimal()
+                minimum = "0.9".toBigDecimal()
             }
         }
     }

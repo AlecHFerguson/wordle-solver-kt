@@ -19,8 +19,8 @@ class WordlePlayerTest {
             outputs,
             listOf(
                 "${ANSI_GREEN_BACKGROUND}s$ANSI_RESET" + "${ANSI_YELLOW_BACKGROUND}i$ANSI_RESET" +
-                        "${ANSI_YELLOW_BACKGROUND}k$ANSI_RESET" + "${ANSI_GREEN_BACKGROUND}e$ANSI_RESET" +
-                        "${ANSI_WHITE_BACKGROUND}s$ANSI_RESET" + "\n"
+                      "${ANSI_YELLOW_BACKGROUND}k$ANSI_RESET" + "${ANSI_GREEN_BACKGROUND}e$ANSI_RESET" +
+                      "${ANSI_WHITE_BACKGROUND}s$ANSI_RESET" + "\n"
             )
         )
     }
