@@ -62,10 +62,6 @@ open class WordleSolver(
         return getAvailableGuesses().sortedByDescending { avgEliminated.get(it) }
     }
 
-    private fun getSimpleGuess(sortedGuesses: List<String>): String {
-        return sortedGuesses.first()
-    }
-
     private fun getBestGuessWordByScore(sortedGuesses: List<String>): String {
         val guessResults = testGuessScoreAllWords(sortedGuesses = sortedGuesses)
         return guessResults.first

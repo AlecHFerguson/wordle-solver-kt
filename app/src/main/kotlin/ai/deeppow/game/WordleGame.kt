@@ -5,6 +5,14 @@ object Correct : Truthiness
 object OtherSlot : Truthiness
 object NotPresent : Truthiness
 
+fun Truthiness.toLetter(): String {
+    return when (this) {
+        is Correct -> "C"
+        is OtherSlot -> "O"
+        is NotPresent -> "N"
+    }
+}
+
 data class CharacterResult(
     val letter: Char,
     val guessIndex: Int,
@@ -42,6 +50,10 @@ data class GuessResult(
 
     override fun toString(): String {
         return letters.joinToString(separator = "") { it.toColorString() }
+    }
+
+    fun toResultString(): String {
+        return letters.joinToString(separator = "") { it.result.toLetter() }
     }
 
     private fun CharacterResult.toColorString(): String {

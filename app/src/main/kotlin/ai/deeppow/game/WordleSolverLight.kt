@@ -34,9 +34,6 @@ open class WordleSolverLight(
     var isSolved = false
 
     fun makeGuess(word: String, wordleGame: WordleGame): WordleSolverLight {
-//        if (wordTree.getWord(word) == null) {
-//            throw WordlePlayerException("$word not found in dictionary")
-//        }
         val guessResults = wordleGame.makeGuess(word)
         letters@ for (letter in guessResults.letters) {
             if (
@@ -95,6 +92,10 @@ open class WordleSolverLight(
 
     private fun String.hasAllRequiredLetters(): Boolean {
         return letterMap.requiredLetters.keys.all { this.contains(it) }
+    }
+
+    protected fun getSimpleGuess(sortedGuesses: List<String>): String {
+        return sortedGuesses.first()
     }
 }
 
