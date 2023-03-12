@@ -4,7 +4,7 @@ import ai.deeppow.models.WordNode
 import ai.deeppow.models.WordTree
 import kotlinx.coroutines.runBlocking
 
-class WordlePlayer(gameWord: String? = null) : WordleSolver() {
+class WordlePlayer(gameWord: String? = null) : WordleSolverEliminated() {
     private var sparseHint = true
     private val wordleGame = WordleGame(gameWord = gameWord ?: wordTree.getRandomWord())
 

@@ -5,14 +5,12 @@ import ai.deeppow.preprocessors.GenerateLetterFrequencyMap
 import kotlinx.coroutines.*
 import java.util.concurrent.atomic.AtomicInteger
 
-open class WordleSolver(
+open class WordleSolverEliminated(
     private val avgEliminated: AverageEliminated = AverageEliminated.read(),
     private val strategy: GuessStrategy = Balanced,
     wordTree: WordTree = GetTree.getWordTree()
-) : WordleSolverLight(wordTree = wordTree) {
-    private var varietyGuessCount: Int = 0
-
-    fun solveForWord(wordleGame: WordleGame): Boolean {
+) : BaseSolver(wordTree = wordTree) {
+    override fun solveForWord(wordleGame: WordleGame): Boolean {
         makeGuess(word = bestStartWord, wordleGame = wordleGame)
         if (isSolved) {
             return true
@@ -101,49 +99,6 @@ open class WordleSolver(
             testForAllWords(wordTree = wordTree, scope = this, wordList = availableGuesses)
         }
         return guessResults.maxBy { it.second }.first
-    }
-
-    private fun needsMoreVariety(): Boolean {
-        return varietyGuessCount < 3 && guesses.last().guessResult.letters.count { it.result is Correct } >= 4
-    }
-
-    private fun makeVarietyGuess(): String? {
-        val letterFrequencies = GenerateLetterFrequencyMap.generateFrequencyMap(getAvailableGuesses())
-        val letterWeights = mutableMapOf<Char, Double>()
-        letterFrequencies.forEach { (char, count) ->
-            val letterWeight = count / letterFrequencyMap[char]!!.toDouble()
-            letterWeights[char] = letterWeight
-        }
-        return wordTree.getVarietyGuess(letterWeights)
-    }
-
-    private fun WordTree.getVarietyGuess(letterWeights: Map<Char, Double>): String? {
-        wordMap.values.filter { letterWeights.containsKey(it.character) }
-            .sortedBy { letterWeights[it.character] }.forEach { wordNode ->
-                val newLetterFrequencies = letterWeights.toMutableMap()
-                newLetterFrequencies.remove(wordNode.character)
-                val foundWord = wordNode.getVarietyGuess(newLetterFrequencies)
-                if (foundWord != null) {
-                    return foundWord
-                }
-            }
-        return null
-    }
-
-    private fun WordNode.getVarietyGuess(letterWeights: Map<Char, Double>): String? {
-        if (isLeafWord && wordSoFar.toCharArray().count { !letterMap.requiredLetters.containsKey(it) } > 1) {
-            return wordSoFar
-        }
-        nextWords.values.filter { letterWeights.containsKey(it.character) }
-            .sortedBy { letterWeights[it.character] }.forEach { wordNode ->
-                val newLetterFrequencies = letterWeights.toMutableMap()
-                newLetterFrequencies.remove(wordNode.character)
-                val foundWord = wordNode.getVarietyGuess(newLetterFrequencies)
-                if (foundWord != null) {
-                    return foundWord
-                }
-            }
-        return null
     }
 
     protected suspend fun testForAllWords(

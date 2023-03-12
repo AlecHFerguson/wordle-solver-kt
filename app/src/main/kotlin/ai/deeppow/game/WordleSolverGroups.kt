@@ -2,12 +2,14 @@ package ai.deeppow.game
 
 import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.GetTree
+import ai.deeppow.models.WordTree
 import kotlinx.coroutines.*
 
 class WordleSolverGroups(
     private val avgEliminated: AverageEliminated = AverageEliminated.read(),
-) : WordleSolverLight(wordTree = GetTree.getWordTree()) {
-    fun solveForWord(wordleGame: WordleGame): Boolean {
+    wordTree: WordTree = GetTree.getWordTree()
+) : BaseSolver(wordTree = wordTree) {
+    override fun solveForWord(wordleGame: WordleGame): Boolean {
         makeGuess(word = bestStartWord, wordleGame = wordleGame)
         if (isSolved) {
             return true
@@ -24,6 +26,13 @@ class WordleSolverGroups(
     }
 
     internal fun getBestGuessWord(): String {
+        if (needsMoreVariety()) {
+            val varietyGuess = makeVarietyGuess()
+            if (varietyGuess != null) {
+                varietyGuessCount += 1
+                return varietyGuess
+            }
+        }
         if (getAvailableGuesses().count() > maxTestCount) {
             return getSimpleGuess(getSortedGuesses())
         }
@@ -38,9 +47,12 @@ class WordleSolverGroups(
         val guessResults = runBlocking {
             testForAllWords(scope = this, wordList = availableGuesses)
         }
-        val sortedGuesses = guessResults.sortedWith(
-            compareBy<GroupsResult> { it.largestGroup }.thenByDescending { it.numberOfGroups }
-        )
+//        val sortedGuesses = guessResults.sortedWith(
+//            compareBy<GroupsResult> { it.largestGroup }.thenByDescending { it.numberOfGroups }
+//        )
+        val sortedGuesses = guessResults.sortedByDescending {
+            it.numberOfGroups.toDouble() / it.largestGroup.toDouble()
+        }
         return sortedGuesses.first().word
     }
 

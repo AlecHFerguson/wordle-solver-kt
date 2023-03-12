@@ -1,8 +1,7 @@
 package ai.deeppow.preprocessors
 
-import ai.deeppow.game.TestAllScored
 import ai.deeppow.game.WordleGame
-import ai.deeppow.game.WordleSolver
+import ai.deeppow.game.WordleSolverGroups
 import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.GetTree.getWordTree
 import ai.deeppow.models.WordTree
@@ -18,11 +17,11 @@ fun main() {
     solveAllWords(wordTree = wordTree, averageEliminated = averageEliminated)
 }
 
-const val outputFile = "/Users/alecferguson/scratch/wordle-results/testAllVarietyLater.json"
+const val outputFile = "/Users/alecferguson/scratch/wordle-results/testAllGroupsVariety.json"
 
 data class TimedPlayResult(
     val word: String,
-    val wordlePlayer: WordleSolver,
+    val wordlePlayer: WordleSolverGroups,
     val timeMS: Long,
 )
 
@@ -101,10 +100,10 @@ private fun playForWord(
     wordTree: WordTree,
     averageEliminated: AverageEliminated
 ): TimedPlayResult {
-    var wordlePlayer: WordleSolver
+    var wordlePlayer: WordleSolverGroups
     val timeMS = measureTimeMillis {
         val game = WordleGame(gameWord)
-        wordlePlayer = WordleSolver(avgEliminated = averageEliminated, wordTree = wordTree, strategy = TestAllScored)
+        wordlePlayer = WordleSolverGroups(avgEliminated = averageEliminated, wordTree = wordTree)
         wordlePlayer.solveForWord(wordleGame = game)
     }
 

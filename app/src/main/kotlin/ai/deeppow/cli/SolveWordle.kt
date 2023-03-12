@@ -2,7 +2,7 @@ package ai.deeppow.cli
 
 import ai.deeppow.game.GuessAnalysis
 import ai.deeppow.game.WordleGame
-import ai.deeppow.game.WordleSolver
+import ai.deeppow.game.WordleSolverEliminated
 import ai.deeppow.models.AverageEliminated
 import ai.deeppow.models.GetTree
 import ai.deeppow.models.WordTree
@@ -12,7 +12,7 @@ object SolveWordle {
     fun solve() {
         val wordTree = GetTree.getWordTree()
         val gameWord = parseWord(wordTree)
-        val solver = WordleSolver(avgEliminated = AverageEliminated.read())
+        val solver = WordleSolverEliminated(avgEliminated = AverageEliminated.read())
         solver.solveForWord(WordleGame(gameWord))
 
         printSummary(gameWord = gameWord, solver = solver)
@@ -37,7 +37,7 @@ object SolveWordle {
         throw WordleSolverException("No valid 5 letter word entered. Go back to kindergarten!")
     }
 
-    private fun printSummary(gameWord: String, solver: WordleSolver) {
+    private fun printSummary(gameWord: String, solver: WordleSolverEliminated) {
         println("Solved $gameWord in ${solver.guesses.count()} tries. Guesses:")
         solver.guesses.forEach { printGuessSummary(it) }
     }
