@@ -1,6 +1,8 @@
 package ai.deeppow.game
 
-sealed interface Truthiness
+import java.io.Serializable
+
+sealed interface Truthiness : Serializable
 object Correct : Truthiness
 object OtherSlot : Truthiness
 object NotPresent : Truthiness
@@ -13,11 +15,15 @@ fun Truthiness.toLetter(): String {
     }
 }
 
+fun List<Truthiness>.toResultString(): String {
+    return this.joinToString(separator = "") { it.toLetter() }
+}
+
 data class CharacterResult(
     val letter: Char,
     val guessIndex: Int,
     val result: Truthiness,
-)
+) : Serializable
 
 private data class CharResultIntermediate(
     val letter: Char,
@@ -37,7 +43,7 @@ data class GuessResult(
     val guess: String,
     val letters: List<CharacterResult>,
     val solved: Boolean
-) {
+) : Serializable {
     fun getScore(): Int {
         return letters.sumOf {
             return@sumOf when (it.result) {

@@ -81,6 +81,10 @@ application {
 tasks.test {
     useJUnitPlatform()
 
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+
     finalizedBy(tasks.jacocoTestReport)
 }
 
