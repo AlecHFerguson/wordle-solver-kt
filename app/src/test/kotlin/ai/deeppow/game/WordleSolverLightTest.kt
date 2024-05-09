@@ -2,8 +2,8 @@ package ai.deeppow.game
 
 import ai.deeppow.models.GetTree
 import ai.deeppow.models.getAllWords
-import kotlin.test.Test
 import kotlin.system.measureTimeMillis
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

@@ -27,4 +27,4 @@ data class GuessGroupResult(
 data class WordGroupsResult(
     var guessWord: String? = null,
     val wordGroups: MutableMap<String, MutableList<String>> = mutableMapOf()
-) {}
+)

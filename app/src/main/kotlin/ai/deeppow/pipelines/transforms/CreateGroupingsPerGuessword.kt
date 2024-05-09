@@ -14,7 +14,9 @@ class CreateGroupingsPerGuessword : Combine.CombineFn<GuessGroupResult, WordGrou
         if (mutableAccumulator.guessWord == null) {
             mutableAccumulator.guessWord = input.guessCombo.guessWord
         }
-        mutableAccumulator.wordGroups.getOrPut(input.lettersResult.toResultString()) { mutableListOf() }.add(input.guessCombo.gameWord)
+        mutableAccumulator.wordGroups
+            .getOrPut(input.lettersResult.toResultString()) { mutableListOf() }
+            .add(input.guessCombo.gameWord)
         return mutableAccumulator
     }
 

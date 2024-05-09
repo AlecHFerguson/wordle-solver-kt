@@ -27,7 +27,7 @@ object CreateGroupsPipeline {
                 doFn = TestForGrouping()
             )
             .toKv(name = "KV by guessWord") { it.guessCombo.guessWord }
-            .apply("Results by guessword", Combine.perKey( CreateGroupingsPerGuessword()))
+            .apply("Results by guessword", Combine.perKey(CreateGroupingsPerGuessword()))
 
         pipeline.run()
     }
