@@ -47,9 +47,6 @@ class WordleSolverGroups(
         val guessResults = runBlocking {
             testForAllWords(scope = this, wordList = availableGuesses)
         }
-//        val sortedGuesses = guessResults.sortedWith(
-//            compareBy<GroupsResult> { it.largestGroup }.thenByDescending { it.numberOfGroups }
-//        )
         val sortedGuesses = guessResults.sortedByDescending {
             it.numberOfGroups.toDouble() / it.largestGroup.toDouble()
         }
