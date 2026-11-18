@@ -1,8 +1,8 @@
 package ai.deeppow.pipelines.beam
 
 import org.apache.beam.sdk.Pipeline
-import org.apache.beam.sdk.coders.AvroCoder
-import org.apache.beam.sdk.io.AvroIO
+import org.apache.beam.sdk.extensions.avro.coders.AvroCoder
+import org.apache.beam.sdk.extensions.avro.io.AvroIO
 import org.apache.beam.sdk.options.ValueProvider
 import org.apache.beam.sdk.values.PCollection
 import org.apache.beam.sdk.values.PDone

@@ -45,12 +45,13 @@ repositories {
 
 dependencies {
     val coroutinesVersion = "1.6.4"
-    val beamVersion = "2.42.0"
+    val beamVersion = "2.77.0"
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
 
     implementation("org.apache.beam:beam-sdks-java-core:$beamVersion")
+    implementation("org.apache.beam:beam-sdks-java-extensions-avro:$beamVersion")
     runtimeOnly("org.apache.beam:beam-runners-google-cloud-dataflow-java:$beamVersion")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -58,13 +59,11 @@ dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    // This dependency is used by the application.
-    implementation("com.google.guava:guava:31.0.1-jre")
+    implementation("com.google.guava:guava:33.8.0-jre")
 
     implementation("org.apache.avro:avro:1.11.0")
 
-    // Use the Kotlin test library.
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation(kotlin("test"))
 }
 
 application {
@@ -72,17 +71,16 @@ application {
     mainClass.set("wordle.solver.kt.AppKt")
 }
 
-tasks.test {
+tasks.withType<Test> {
     useJUnitPlatform()
-
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
     finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
-}
-
-tasks.jacocoTestReport {
     reports {
         xml.required.set(false)
         csv.required.set(false)
