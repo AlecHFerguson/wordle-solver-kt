@@ -78,6 +78,9 @@ dependencies {
         implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion") {
             because("Fixes security vulnerability CVE-2026-89425")
         }
+        implementation("org.xerial.snappy:snappy-java:1.1.10.12") {
+            because("Fixes security vulnerability CVE-2026-93451")
+        }
     }
 }
 
