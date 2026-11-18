@@ -4,9 +4,7 @@ plugins {
 
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 
-//    id("com.bakdata.gradle.avro.gradle-avro-plugin") version "2.0.1"
-
-    id("org.owasp.dependencycheck") version "13.0.0"
+    id("com.fizzpod.osv-scanner") version "6.3.1"
 
     // Apply the application plugin to add support for building a CLI application in Java.
     application
@@ -36,14 +34,27 @@ ktlint {
     version = "1.4.0"
 }
 
+osvScanner {
+    format = "json"
+    failOn = "score"
+    failOnThreshold = 7.0 // Fails on High (7.0–8.9) and Critical (9.0–10.0)
+}
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
 }
 
+configurations {
+    named("compileClasspath") {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
 dependencies {
     val coroutinesVersion = "1.6.4"
     val beamVersion = "2.77.0"
+    val jacksonVersion = "2.22.4"
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -59,9 +70,15 @@ dependencies {
 
     implementation("com.google.guava:guava:33.8.0-jre")
 
-    implementation("org.apache.avro:avro:1.11.0")
+    implementation("org.apache.avro:avro:1.12.2")
 
     testImplementation(kotlin("test"))
+
+    constraints {
+        implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion") {
+            because("Fixes security vulnerability CVE-2026-89425")
+        }
+    }
 }
 
 application {
@@ -69,8 +86,15 @@ application {
     mainClass.set("wordle.solver.kt.AppKt")
 }
 
+tasks.withType<JavaExec> {
+    systemProperty("org.apache.avro.SERIALIZABLE_PACKAGES", "ai.deeppow.models")
+    systemProperty("org.apache.avro.SERIALIZABLE_CLASSES", "java.util.LinkedHashMap")
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    systemProperty("org.apache.avro.SERIALIZABLE_PACKAGES", "ai.deeppow.models")
+    systemProperty("org.apache.avro.SERIALIZABLE_CLASSES", "java.util.LinkedHashMap")
     testLogging {
         events("passed", "skipped", "failed")
     }
@@ -97,12 +121,14 @@ tasks.jacocoTestCoverageVerification {
 }
 
 tasks.register<JavaExec>("generateAvgEliminated") {
+    description = "Runs Wordle solver for all words. Generates JSON file showing results."
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("ai.deeppow.preprocessors.GenerateAverageEliminatedMap")
     jvmArgs = listOf("-XX:+HeapDumpOnOutOfMemoryError")
 }
 
 tasks.register<JavaExec>("CreateMostEliminatedPipeline") {
+    description = "Creates Google Cloud Dataflow pipeline which tests all words and finds best initial guess."
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("ai.deeppow.pipelines.CreateMostEliminatedPipeline")
     args =
@@ -119,6 +145,7 @@ tasks.register<JavaExec>("CreateMostEliminatedPipeline") {
 }
 
 tasks.register<JavaExec>("Wordle") {
+    description = "Play Wordle on command line"
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("ai.deeppow.App")
     standardInput = System.`in`
