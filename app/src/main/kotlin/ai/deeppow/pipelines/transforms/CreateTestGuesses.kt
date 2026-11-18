@@ -22,13 +22,16 @@ class CreateTestGuesses : DoFn<String, GuessCombo>() {
     }
 
     @ProcessElement
-    fun processElement(@Element guessWord: String, context: ProcessContext) {
+    fun processElement(
+        @Element guessWord: String,
+        context: ProcessContext,
+    ) {
         allWords.forEach { gameWord ->
             context.output(
                 GuessCombo(
                     guessWord = guessWord,
-                    gameWord = gameWord
-                )
+                    gameWord = gameWord,
+                ),
             )
         }
     }

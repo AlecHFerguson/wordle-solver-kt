@@ -13,27 +13,26 @@ import org.apache.beam.sdk.values.TypeDescriptor
 object Map {
     inline fun <In, reified Out> PCollection<In>.map(
         name: String = "Map",
-        noinline transformer: (In) -> Out
-    ): PCollection<Out> {
-        return apply(
+        noinline transformer: (In) -> Out,
+    ): PCollection<Out> =
+        apply(
             name,
-            MapElements.into(TypeDescriptor.of(Out::class.java))
-                .via(ProcessFunction(transformer))
+            MapElements
+                .into(TypeDescriptor.of(Out::class.java))
+                .via(ProcessFunction(transformer)),
         )
-    }
 
     fun <V> PCollection<V>.toKv(
         name: String,
-        keyFunction: (V) -> String
-    ): PCollection<KV<String, V>> {
-        return apply(
+        keyFunction: (V) -> String,
+    ): PCollection<KV<String, V>> =
+        apply(
             name,
-            WithKeys.of(SerializableFunction<V, String> { keyFunction(it) })
+            WithKeys.of(SerializableFunction<V, String> { keyFunction(it) }),
         ).setCoder(
             KvCoder.of(
                 StringUtf8Coder.of(),
-                coder
-            )
+                coder,
+            ),
         )
-    }
 }

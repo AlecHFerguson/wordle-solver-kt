@@ -6,7 +6,7 @@ import java.io.Serializable
 
 data class WordRunningCount(
     var totalEliminated: Double = 0.0,
-    var wordCount: Int = 0
+    var wordCount: Int = 0,
 ) : Serializable
 
 operator fun WordRunningCount.plus(other: WordRunningCount): WordRunningCount {
@@ -16,23 +16,22 @@ operator fun WordRunningCount.plus(other: WordRunningCount): WordRunningCount {
 }
 
 class CombineCountsPerWord : Combine.CombineFn<WordsEliminated, WordRunningCount, Double>() {
-    override fun createAccumulator(): WordRunningCount {
-        return WordRunningCount()
-    }
+    override fun createAccumulator(): WordRunningCount = WordRunningCount()
 
-    override fun addInput(mutableAccumulator: WordRunningCount, input: WordsEliminated): WordRunningCount {
+    override fun addInput(
+        mutableAccumulator: WordRunningCount,
+        input: WordsEliminated,
+    ): WordRunningCount {
         mutableAccumulator.totalEliminated += input.wordsEliminated.toDouble()
         mutableAccumulator.wordCount += 1
         return mutableAccumulator
     }
 
-    override fun mergeAccumulators(accumulators: MutableIterable<WordRunningCount>): WordRunningCount {
-        return accumulators.reduce { acc, wordRunningCount ->
+    override fun mergeAccumulators(accumulators: MutableIterable<WordRunningCount>): WordRunningCount =
+        accumulators.reduce { acc, wordRunningCount ->
             acc + wordRunningCount
         }
-    }
 
-    override fun extractOutput(accumulator: WordRunningCount): Double {
-        return accumulator.totalEliminated / accumulator.wordCount
-    }
+    override fun extractOutput(accumulator: WordRunningCount): Double =
+        accumulator.totalEliminated / accumulator.wordCount
 }

@@ -10,23 +10,22 @@ import org.apache.beam.sdk.values.PDone
 object Avro {
     inline fun <reified Out> Pipeline.fromAvroClass(
         filePath: ValueProvider<String>,
-        name: String = "Read ${Out::class.simpleName}"
-    ): PCollection<Out> {
-        return apply(
+        name: String = "Read ${Out::class.simpleName}",
+    ): PCollection<Out> =
+        apply(
             name,
-            AvroIO.read(Out::class.java).from(filePath)
+            AvroIO.read(Out::class.java).from(filePath),
         ).setCoder(AvroCoder.of(Out::class.java))
-    }
 
     inline fun <reified In> PCollection<In>.toAvro(
         name: String = "To Avro",
-        filePath: ValueProvider<String>
-    ): PDone {
-        return apply(
+        filePath: ValueProvider<String>,
+    ): PDone =
+        apply(
             name,
-            AvroIO.write(In::class.java)
+            AvroIO
+                .write(In::class.java)
                 .to(filePath)
-                .withSuffix(".avro")
+                .withSuffix(".avro"),
         )
-    }
 }

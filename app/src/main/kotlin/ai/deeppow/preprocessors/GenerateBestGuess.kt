@@ -12,20 +12,23 @@ object GenerateBestGuess {
         val game = WordleGame(word)
         val wordTree = getWordTree()
 
-        val guessSequences: List<GuessSequence> = wordTree.getAllWords().flatMap {
-            val player = WordleSolverLight(wordTree = wordTree)
-            it.playWordle(wordTree, game, player)
-        }
-        val topGuessSequences = guessSequences.sortedWith(
-            compareBy<GuessSequence> { it.guesses.count() }.thenBy { it.guesses[0].availableGuesses.count() }
-        ).take(5)
+        val guessSequences: List<GuessSequence> =
+            wordTree.getAllWords().flatMap {
+                val player = WordleSolverLight(wordTree = wordTree)
+                it.playWordle(wordTree, game, player)
+            }
+        val topGuessSequences =
+            guessSequences
+                .sortedWith(
+                    compareBy<GuessSequence> { it.guesses.count() }.thenBy { it.guesses[0].availableGuesses.count() },
+                ).take(5)
         println("Top guesses for $word: $topGuessSequences")
     }
 
     private fun String.playWordle(
         wordTree: WordTree,
         game: WordleGame,
-        player: WordleSolverLight
+        player: WordleSolverLight,
     ): List<GuessSequence> {
         val guessSequences = mutableListOf<GuessSequence>()
         if (player.guesses.count() < 6) {
@@ -35,7 +38,7 @@ object GenerateBestGuess {
             }
             player.getAvailableGuesses().forEach { guess ->
                 guessSequences.addAll(
-                    guess.playWordle(wordTree = wordTree, game = game, player = player)
+                    guess.playWordle(wordTree = wordTree, game = game, player = player),
                 )
             }
         }

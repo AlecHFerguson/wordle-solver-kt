@@ -11,9 +11,10 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "apron",
-                letters = "apron".toCharArray().mapIndexed { ind, char ->
-                    CharacterResult(letter = char, guessIndex = ind, result = Correct)
-                },
+                letters =
+                    "apron".toCharArray().mapIndexed { ind, char ->
+                        CharacterResult(letter = char, guessIndex = ind, result = Correct)
+                    },
                 solved = true,
             ),
             result,
@@ -27,16 +28,17 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "soapy",
-                letters = listOf(
-                    CharacterResult(letter = "s".first(), guessIndex = 0, result = Correct),
-                    CharacterResult(letter = "o".first(), guessIndex = 1, result = OtherSlot),
-                    CharacterResult(letter = "a".first(), guessIndex = 2, result = NotPresent),
-                    CharacterResult(letter = "p".first(), guessIndex = 3, result = NotPresent),
-                    CharacterResult(letter = "y".first(), guessIndex = 4, result = Correct)
-                ),
+                letters =
+                    listOf(
+                        CharacterResult(letter = "s".first(), guessIndex = 0, result = Correct),
+                        CharacterResult(letter = "o".first(), guessIndex = 1, result = OtherSlot),
+                        CharacterResult(letter = "a".first(), guessIndex = 2, result = NotPresent),
+                        CharacterResult(letter = "p".first(), guessIndex = 3, result = NotPresent),
+                        CharacterResult(letter = "y".first(), guessIndex = 4, result = Correct),
+                    ),
                 solved = false,
             ),
-            result
+            result,
         )
     }
 
@@ -47,16 +49,17 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "safes",
-                letters = listOf(
-                    CharacterResult(letter = "s".first(), guessIndex = 0, result = NotPresent),
-                    CharacterResult(letter = "a".first(), guessIndex = 1, result = Correct),
-                    CharacterResult(letter = "f".first(), guessIndex = 2, result = OtherSlot),
-                    CharacterResult(letter = "e".first(), guessIndex = 3, result = Correct),
-                    CharacterResult(letter = "s".first(), guessIndex = 4, result = Correct)
-                ),
-                solved = false
+                letters =
+                    listOf(
+                        CharacterResult(letter = "s".first(), guessIndex = 0, result = NotPresent),
+                        CharacterResult(letter = "a".first(), guessIndex = 1, result = Correct),
+                        CharacterResult(letter = "f".first(), guessIndex = 2, result = OtherSlot),
+                        CharacterResult(letter = "e".first(), guessIndex = 3, result = Correct),
+                        CharacterResult(letter = "s".first(), guessIndex = 4, result = Correct),
+                    ),
+                solved = false,
             ),
-            result
+            result,
         )
     }
 
@@ -67,16 +70,17 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "sassy",
-                letters = listOf(
-                    CharacterResult(letter = "s".first(), guessIndex = 0, result = OtherSlot),
-                    CharacterResult(letter = "a".first(), guessIndex = 1, result = OtherSlot),
-                    CharacterResult(letter = "s".first(), guessIndex = 2, result = Correct),
-                    CharacterResult(letter = "s".first(), guessIndex = 3, result = OtherSlot),
-                    CharacterResult(letter = "y".first(), guessIndex = 4, result = NotPresent)
-                ),
-                solved = false
+                letters =
+                    listOf(
+                        CharacterResult(letter = "s".first(), guessIndex = 0, result = OtherSlot),
+                        CharacterResult(letter = "a".first(), guessIndex = 1, result = OtherSlot),
+                        CharacterResult(letter = "s".first(), guessIndex = 2, result = Correct),
+                        CharacterResult(letter = "s".first(), guessIndex = 3, result = OtherSlot),
+                        CharacterResult(letter = "y".first(), guessIndex = 4, result = NotPresent),
+                    ),
+                solved = false,
             ),
-            result
+            result,
         )
     }
 
@@ -87,16 +91,17 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "trott",
-                letters = listOf(
-                    CharacterResult(letter = "t".first(), guessIndex = 0, result = NotPresent),
-                    CharacterResult(letter = "r".first(), guessIndex = 1, result = NotPresent),
-                    CharacterResult(letter = "o".first(), guessIndex = 2, result = NotPresent),
-                    CharacterResult(letter = "t".first(), guessIndex = 3, result = NotPresent),
-                    CharacterResult(letter = "t".first(), guessIndex = 4, result = Correct)
-                ),
-                solved = false
+                letters =
+                    listOf(
+                        CharacterResult(letter = "t".first(), guessIndex = 0, result = NotPresent),
+                        CharacterResult(letter = "r".first(), guessIndex = 1, result = NotPresent),
+                        CharacterResult(letter = "o".first(), guessIndex = 2, result = NotPresent),
+                        CharacterResult(letter = "t".first(), guessIndex = 3, result = NotPresent),
+                        CharacterResult(letter = "t".first(), guessIndex = 4, result = Correct),
+                    ),
+                solved = false,
             ),
-            result
+            result,
         )
     }
 
@@ -107,16 +112,17 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "garri",
-                letters = listOf(
-                    CharacterResult(letter = "g".first(), guessIndex = 0, result = OtherSlot),
-                    CharacterResult(letter = "a".first(), guessIndex = 1, result = Correct),
-                    CharacterResult(letter = "r".first(), guessIndex = 2, result = Correct),
-                    CharacterResult(letter = "r".first(), guessIndex = 3, result = NotPresent),
-                    CharacterResult(letter = "i".first(), guessIndex = 4, result = NotPresent)
-                ),
-                solved = false
+                letters =
+                    listOf(
+                        CharacterResult(letter = "g".first(), guessIndex = 0, result = OtherSlot),
+                        CharacterResult(letter = "a".first(), guessIndex = 1, result = Correct),
+                        CharacterResult(letter = "r".first(), guessIndex = 2, result = Correct),
+                        CharacterResult(letter = "r".first(), guessIndex = 3, result = NotPresent),
+                        CharacterResult(letter = "i".first(), guessIndex = 4, result = NotPresent),
+                    ),
+                solved = false,
             ),
-            result
+            result,
         )
     }
 
@@ -127,16 +133,17 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "coomy",
-                letters = listOf(
-                    CharacterResult(letter = "c".first(), guessIndex = 0, result = NotPresent),
-                    CharacterResult(letter = "o".first(), guessIndex = 1, result = OtherSlot),
-                    CharacterResult(letter = "o".first(), guessIndex = 2, result = Correct),
-                    CharacterResult(letter = "m".first(), guessIndex = 3, result = NotPresent),
-                    CharacterResult(letter = "y".first(), guessIndex = 4, result = NotPresent)
-                ),
-                solved = false
+                letters =
+                    listOf(
+                        CharacterResult(letter = "c".first(), guessIndex = 0, result = NotPresent),
+                        CharacterResult(letter = "o".first(), guessIndex = 1, result = OtherSlot),
+                        CharacterResult(letter = "o".first(), guessIndex = 2, result = Correct),
+                        CharacterResult(letter = "m".first(), guessIndex = 3, result = NotPresent),
+                        CharacterResult(letter = "y".first(), guessIndex = 4, result = NotPresent),
+                    ),
+                solved = false,
             ),
-            result
+            result,
         )
     }
 
@@ -147,16 +154,17 @@ class WordleGameTest {
         assertEquals(
             GuessResult(
                 guess = "clear",
-                letters = listOf(
-                    CharacterResult(letter = "c".first(), guessIndex = 0, result = NotPresent),
-                    CharacterResult(letter = "l".first(), guessIndex = 1, result = NotPresent),
-                    CharacterResult(letter = "e".first(), guessIndex = 2, result = NotPresent),
-                    CharacterResult(letter = "a".first(), guessIndex = 3, result = NotPresent),
-                    CharacterResult(letter = "r".first(), guessIndex = 4, result = NotPresent),
-                ),
-                solved = false
+                letters =
+                    listOf(
+                        CharacterResult(letter = "c".first(), guessIndex = 0, result = NotPresent),
+                        CharacterResult(letter = "l".first(), guessIndex = 1, result = NotPresent),
+                        CharacterResult(letter = "e".first(), guessIndex = 2, result = NotPresent),
+                        CharacterResult(letter = "a".first(), guessIndex = 3, result = NotPresent),
+                        CharacterResult(letter = "r".first(), guessIndex = 4, result = NotPresent),
+                    ),
+                solved = false,
             ),
-            result
+            result,
         )
     }
 }

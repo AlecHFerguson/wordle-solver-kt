@@ -18,7 +18,7 @@ fun main() {
     solveAllWords(wordTree = wordTree, averageEliminated = averageEliminated)
 }
 
-const val outputFile = "/Users/alecferguson/scratch/wordle-results/testAllVarietyLater.json"
+const val OUTPUT_FILE = "/Users/alecferguson/scratch/wordle-results/testAllVarietyLater.json"
 
 data class TimedPlayResult(
     val word: String,
@@ -78,17 +78,21 @@ fun List<TimedPlayResult>.toSummaryResult(): SummaryResult {
     )
 }
 
-private fun solveAllWords(wordTree: WordTree, averageEliminated: AverageEliminated) {
+private fun solveAllWords(
+    wordTree: WordTree,
+    averageEliminated: AverageEliminated,
+) {
     val allWords = wordTree.getAllWords()
-    val results = allWords.map { gameWord ->
-        playForWord(gameWord = gameWord, wordTree = wordTree, averageEliminated = averageEliminated)
-    }
+    val results =
+        allWords.map { gameWord ->
+            playForWord(gameWord = gameWord, wordTree = wordTree, averageEliminated = averageEliminated)
+        }
     val (solvedWords, unsolvedWords) = results.partition { it.wordlePlayer.isSolved }
     val guessDistribution = solvedWords.getGuessDistribution()
     val summaryResult = solvedWords.toSummaryResult()
 
     val objectMapper = ObjectMapper()
-    objectMapper.writeValue(File(outputFile), summaryResult)
+    objectMapper.writeValue(File(OUTPUT_FILE), summaryResult)
 
     println("Solved ${solvedWords.count()}. Still to go: ${unsolvedWords.count()}")
     println("Avg solved time = ${solvedWords.sumOf { it.timeMS } / solvedWords.count().toDouble()}")
@@ -99,28 +103,31 @@ private fun solveAllWords(wordTree: WordTree, averageEliminated: AverageEliminat
 private fun playForWord(
     gameWord: String,
     wordTree: WordTree,
-    averageEliminated: AverageEliminated
+    averageEliminated: AverageEliminated,
 ): TimedPlayResult {
     var wordlePlayer: WordleSolver
-    val timeMS = measureTimeMillis {
-        val game = WordleGame(gameWord)
-        wordlePlayer = WordleSolver(avgEliminated = averageEliminated, wordTree = wordTree, strategy = TestAllScored)
-        wordlePlayer.solveForWord(wordleGame = game)
-    }
+    val timeMS =
+        measureTimeMillis {
+            val game = WordleGame(gameWord)
+            wordlePlayer =
+                WordleSolver(avgEliminated = averageEliminated, wordTree = wordTree, strategy = TestAllScored)
+            wordlePlayer.solveForWord(wordleGame = game)
+        }
 
     return TimedPlayResult(
         word = gameWord,
         wordlePlayer = wordlePlayer,
-        timeMS = timeMS
+        timeMS = timeMS,
     )
 }
 
 private fun List<TimedPlayResult>.getGuessDistribution(): Map<Int, List<TimedPlayResult>> {
     val guessDistribution = mutableMapOf<Int, MutableList<TimedPlayResult>>()
     forEach { result ->
-        guessDistribution.getOrPut(result.wordlePlayer.guesses.count()) {
-            mutableListOf()
-        }.add(result)
+        guessDistribution
+            .getOrPut(result.wordlePlayer.guesses.count()) {
+                mutableListOf()
+            }.add(result)
     }
     return guessDistribution
 }

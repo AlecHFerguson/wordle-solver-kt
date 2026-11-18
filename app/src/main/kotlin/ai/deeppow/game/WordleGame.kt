@@ -1,8 +1,11 @@
 package ai.deeppow.game
 
 sealed interface Truthiness
+
 object Correct : Truthiness
+
 object OtherSlot : Truthiness
+
 object NotPresent : Truthiness
 
 data class CharacterResult(
@@ -28,7 +31,7 @@ private const val ANSI_RESET = "\u001B[0m"
 data class GuessResult(
     val guess: String,
     val letters: List<CharacterResult>,
-    val solved: Boolean
+    val solved: Boolean,
 ) {
     fun getScore(): Int {
         return letters.sumOf {
@@ -40,20 +43,19 @@ data class GuessResult(
         }
     }
 
-    override fun toString(): String {
-        return letters.joinToString(separator = "") { it.toColorString() }
-    }
+    override fun toString(): String = letters.joinToString(separator = "") { it.toColorString() }
 
-    private fun CharacterResult.toColorString(): String {
-        return when (result) {
+    private fun CharacterResult.toColorString(): String =
+        when (result) {
             is Correct -> "$ANSI_GREEN_BACKGROUND$letter$ANSI_RESET"
             is OtherSlot -> "$ANSI_YELLOW_BACKGROUND$letter$ANSI_RESET"
             is NotPresent -> "$ANSI_WHITE_BACKGROUND$letter$ANSI_RESET"
         }
-    }
 }
 
-class WordleGame(private val gameWord: String) {
+class WordleGame(
+    private val gameWord: String,
+) {
     fun makeGuess(word: String): GuessResult {
 //        if (word.count() != 5) {
 //            throw IllegalArgumentException("Word must be 5 letters: $word")
@@ -70,9 +72,12 @@ class WordleGame(private val gameWord: String) {
 
     private data class WordleMap(
         val letters: Map<Char, List<CharPlace>>,
-        val notPresentGuesses: MutableList<CharResultIntermediate> = mutableListOf()
+        val notPresentGuesses: MutableList<CharResultIntermediate> = mutableListOf(),
     ) {
-        fun evaluateChar(index: Int, char: Char) {
+        fun evaluateChar(
+            index: Int,
+            char: Char,
+        ) {
             val foundCharIndices = letters[char]
             if (foundCharIndices == null) {
                 notPresentGuesses.add(
@@ -80,25 +85,27 @@ class WordleGame(private val gameWord: String) {
                         letter = char,
                         guessIndex = index,
                         wordIndex = null,
-                        result = NotPresent
-                    )
+                        result = NotPresent,
+                    ),
                 )
                 return
             }
             val matchingChar = foundCharIndices.firstOrNull { it.wordIndex == index }
             if (matchingChar != null) {
                 matchingChar.found = true
-                matchingChar.correctGuess = CharResultIntermediate(
-                    letter = char,
-                    guessIndex = index,
-                    wordIndex = index,
-                    result = Correct
-                )
+                matchingChar.correctGuess =
+                    CharResultIntermediate(
+                        letter = char,
+                        guessIndex = index,
+                        wordIndex = index,
+                        result = Correct,
+                    )
                 val otherSlotGuess = matchingChar.otherSlotGuess
                 if (otherSlotGuess != null) {
-                    val possibleChar = foundCharIndices.firstOrNull {
-                        it.correctGuess == null && it.otherSlotGuess == null && it.wordIndex > index
-                    }
+                    val possibleChar =
+                        foundCharIndices.firstOrNull {
+                            it.correctGuess == null && it.otherSlotGuess == null && it.wordIndex > index
+                        }
                     if (possibleChar != null) {
                         possibleChar.otherSlotGuess = otherSlotGuess
                     } else {
@@ -109,17 +116,19 @@ class WordleGame(private val gameWord: String) {
                 }
                 return
             }
-            val firstOtherSlotChar = foundCharIndices.firstOrNull {
-                it.correctGuess == null && it.otherSlotGuess == null
-            }
+            val firstOtherSlotChar =
+                foundCharIndices.firstOrNull {
+                    it.correctGuess == null && it.otherSlotGuess == null
+                }
             if (firstOtherSlotChar != null) {
                 firstOtherSlotChar.found = true
-                firstOtherSlotChar.otherSlotGuess = CharResultIntermediate(
-                    letter = char,
-                    guessIndex = index,
-                    wordIndex = firstOtherSlotChar.wordIndex,
-                    result = OtherSlot
-                )
+                firstOtherSlotChar.otherSlotGuess =
+                    CharResultIntermediate(
+                        letter = char,
+                        guessIndex = index,
+                        wordIndex = firstOtherSlotChar.wordIndex,
+                        result = OtherSlot,
+                    )
                 return
             }
             notPresentGuesses.add(
@@ -127,8 +136,8 @@ class WordleGame(private val gameWord: String) {
                     letter = char,
                     guessIndex = index,
                     wordIndex = null,
-                    result = NotPresent
-                )
+                    result = NotPresent,
+                ),
             )
         }
 
@@ -156,14 +165,15 @@ class WordleGame(private val gameWord: String) {
     private fun String.toWordMap(): WordleMap {
         val wordMap = mutableMapOf<Char, MutableList<CharPlace>>()
         forEachIndexed { index, char ->
-            wordMap.getOrPut(char) {
-                mutableListOf()
-            }.add(
-                CharPlace(wordIndex = index, found = false)
-            )
+            wordMap
+                .getOrPut(char) {
+                    mutableListOf()
+                }.add(
+                    CharPlace(wordIndex = index, found = false),
+                )
         }
         return WordleMap(
-            letters = wordMap
+            letters = wordMap,
         )
     }
 
@@ -177,7 +187,7 @@ class WordleGame(private val gameWord: String) {
         return GuessResult(
             guess = guessWord,
             letters = guessResults,
-            solved = guessResults.all { it.result is Correct }
+            solved = guessResults.all { it.result is Correct },
         )
     }
 }

@@ -27,12 +27,13 @@ class WordleSolverTest {
         val allWords = wordTree.getAllWords()
         val game = WordleGame("power")
 
-        val time = measureTimeMillis {
-            repeat(1000) {
-                val player = WordleSolverLight(wordTree, allWords)
-                player.makeGuess("soapy", game)
+        val time =
+            measureTimeMillis {
+                repeat(1000) {
+                    val player = WordleSolverLight(wordTree, allWords)
+                    player.makeGuess("soapy", game)
+                }
             }
-        }
         assertTrue { time < 700 }
     }
 

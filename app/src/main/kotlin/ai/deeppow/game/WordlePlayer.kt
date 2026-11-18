@@ -40,9 +40,10 @@ class WordlePlayer : WordleSolver() {
     }
 
     private fun getScoredGuesses(sortedGuesses: List<String>): List<Pair<String, Double>> {
-        val guessResults = runBlocking {
-            testForAllWords(wordTree = wordTree, scope = this, wordList = sortedGuesses)
-        }
+        val guessResults =
+            runBlocking {
+                testForAllWords(wordTree = wordTree, scope = this, wordList = sortedGuesses)
+            }
         return guessResults.sortedByDescending { it.second }.take(5)
     }
 
@@ -70,4 +71,6 @@ class WordlePlayer : WordleSolver() {
     }
 }
 
-class WordlePlayerException(message: String) : Exception(message)
+class WordlePlayerException(
+    message: String,
+) : Exception(message)

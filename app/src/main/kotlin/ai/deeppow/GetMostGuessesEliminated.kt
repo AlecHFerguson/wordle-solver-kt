@@ -16,9 +16,10 @@ fun main() {
     val wordTree = GetTree.getWordTree()
 
     val wordList = wordTree.getAllWords()
-    val guessAnalyses: List<GuessAnalysis> = runBlocking {
-        testAllForWord(wordleGame = game, wordList = wordList, wordTree = wordTree)
-    }
+    val guessAnalyses: List<GuessAnalysis> =
+        runBlocking {
+            testAllForWord(wordleGame = game, wordList = wordList, wordTree = wordTree)
+        }
 
     val topGuesses = guessAnalyses.sortedBy { it.remainingCount }
     println(topGuesses)
@@ -27,15 +28,15 @@ fun main() {
 private suspend fun testAllForWord(
     wordleGame: WordleGame,
     wordList: List<String>,
-    wordTree: WordTree
-): List<GuessAnalysis> {
-    return coroutineScope {
-        wordList.map { word ->
-            async {
-                val player = WordleSolverLight(wordTree = wordTree)
-                player.makeGuess(word = word, wordleGame = wordleGame)
-                player.guesses.first()
-            }
-        }.awaitAll()
+    wordTree: WordTree,
+): List<GuessAnalysis> =
+    coroutineScope {
+        wordList
+            .map { word ->
+                async {
+                    val player = WordleSolverLight(wordTree = wordTree)
+                    player.makeGuess(word = word, wordleGame = wordleGame)
+                    player.guesses.first()
+                }
+            }.awaitAll()
     }
-}

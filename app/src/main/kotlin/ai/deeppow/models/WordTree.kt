@@ -3,7 +3,7 @@ package ai.deeppow.models
 import org.apache.avro.file.DataFileStream
 import org.apache.avro.reflect.ReflectDatumReader
 
-const val wordTreeFile = "/word-tree.avro"
+const val WORD_TREE_FILE = "/word-tree.avro"
 
 data class WordNode(
     val character: Char = "X".single(),
@@ -11,16 +11,20 @@ data class WordNode(
     val isLeafWord: Boolean = false,
     val nextWords: LinkedHashMap<Char, WordNode> = LinkedHashMap(),
 ) {
-    fun addChars(chars: List<Char>, wordSoFar: String) {
+    fun addChars(
+        chars: List<Char>,
+        wordSoFar: String,
+    ) {
         val key = chars.firstOrNull()
         if (key != null) {
             val followingCharacters = chars.slice(1..chars.lastIndex)
             val newWordSoFar = wordSoFar + key
-            nextWords.getOrPut(key) {
-                WordNode(character = key, wordSoFar = newWordSoFar, isLeafWord = followingCharacters.isEmpty())
-            }.apply {
-                addChars(chars = followingCharacters, wordSoFar = newWordSoFar)
-            }
+            nextWords
+                .getOrPut(key) {
+                    WordNode(character = key, wordSoFar = newWordSoFar, isLeafWord = followingCharacters.isEmpty())
+                }.apply {
+                    addChars(chars = followingCharacters, wordSoFar = newWordSoFar)
+                }
         }
     }
 
@@ -38,20 +42,23 @@ data class WordNode(
     }
 }
 
-data class WordTree(val wordMap: LinkedHashMap<Char, WordNode> = LinkedHashMap()) {
+data class WordTree(
+    val wordMap: LinkedHashMap<Char, WordNode> = LinkedHashMap(),
+) {
     fun addWord(word: String) {
         val characters = word.toCharArray()
         val firstCharacter = characters.firstOrNull()
         if (firstCharacter != null) {
             val followingCharacters = characters.slice(1..characters.lastIndex)
             val wordSoFar = firstCharacter.toString()
-            wordMap.getOrPut(firstCharacter) {
-                WordNode(
-                    character = firstCharacter,
-                    wordSoFar = wordSoFar,
-                    isLeafWord = followingCharacters.isEmpty(),
-                )
-            }.addChars(chars = followingCharacters, wordSoFar = wordSoFar)
+            wordMap
+                .getOrPut(firstCharacter) {
+                    WordNode(
+                        character = firstCharacter,
+                        wordSoFar = wordSoFar,
+                        isLeafWord = followingCharacters.isEmpty(),
+                    )
+                }.addChars(chars = followingCharacters, wordSoFar = wordSoFar)
         }
     }
 
@@ -75,26 +82,25 @@ fun WordNode.getAllWords(): List<String> {
         words.add(wordSoFar)
     }
     words.addAll(
-        nextWords.values.flatMap { it.getAllWords() }
+        nextWords.values.flatMap { it.getAllWords() },
     )
     return words
 }
 
-fun WordTree.getAllWords(): List<String> {
-    return wordMap.values.flatMap { it.getAllWords() }
-}
+fun WordTree.getAllWords(): List<String> = wordMap.values.flatMap { it.getAllWords() }
 
 object GetTree {
     fun getWordTree(): WordTree {
-        val wordTreeResource = javaClass.getResourceAsStream(wordTreeFile) ?: throw IllegalArgumentException(
-            "$wordTreeFile not found in resources"
-        )
+        val wordTreeResource =
+            javaClass.getResourceAsStream(WORD_TREE_FILE) ?: throw IllegalArgumentException(
+                "$WORD_TREE_FILE not found in resources",
+            )
         val reader = ReflectDatumReader(WordTree::class.java)
         val fileReader = DataFileStream(wordTreeResource, reader)
         while (fileReader.hasNext()) {
             return fileReader.next()
         }
-        throw IllegalArgumentException("No WordTree found in file $wordTreeFile")
+        throw IllegalArgumentException("No WordTree found in file $WORD_TREE_FILE")
     }
 }
 

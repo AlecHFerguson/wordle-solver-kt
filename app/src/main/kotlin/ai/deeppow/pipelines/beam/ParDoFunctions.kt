@@ -9,21 +9,19 @@ object ParDoFunctions {
     fun <In, Out> PCollection<In>.parDo(
         name: String,
         doFn: DoFn<In, Out>,
-    ): PCollection<Out> {
-        return this.apply(
+    ): PCollection<Out> =
+        this.apply(
             name,
-            ParDo.of(doFn)
+            ParDo.of(doFn),
         )
-    }
 
     fun <In, SideInput, Out> PCollection<In>.parDo(
         name: String,
         doFn: DoFn<In, Out>,
-        sideInputs: PCollectionView<SideInput>
-    ): PCollection<Out> {
-        return this.apply(
+        sideInputs: PCollectionView<SideInput>,
+    ): PCollection<Out> =
+        this.apply(
             name,
-            ParDo.of(doFn).withSideInputs(sideInputs)
+            ParDo.of(doFn).withSideInputs(sideInputs),
         )
-    }
 }

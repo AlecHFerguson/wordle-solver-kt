@@ -32,12 +32,12 @@ fun main() {
 }
 
 sealed interface WordSource
+
 object Scowl : WordSource
+
 object NYTJson : WordSource
 
-private fun File.shouldInclude(): Boolean {
-    return !isDirectory && wordsFileRegex.containsMatchIn(name)
-}
+private fun File.shouldInclude(): Boolean = !isDirectory && wordsFileRegex.containsMatchIn(name)
 
 private fun File.addToTree(wordTree: WordTree) {
     readLines().forEach {

@@ -20,7 +20,10 @@ class GetWordsEliminated : DoFn<GuessCombo, WordsEliminated>() {
     }
 
     @ProcessElement
-    fun processElement(@Element element: GuessCombo, context: ProcessContext) {
+    fun processElement(
+        @Element element: GuessCombo,
+        context: ProcessContext,
+    ) {
         val player = WordleSolverLight(wordTree = wordTree, allWords = allWords)
         val wordleGame = WordleGame(element.gameWord)
         player.makeGuess(word = element.guessWord, wordleGame = wordleGame)
@@ -30,7 +33,7 @@ class GetWordsEliminated : DoFn<GuessCombo, WordsEliminated>() {
                 gameWord = element.gameWord,
                 guessWord = element.guessWord,
                 wordsEliminated = player.guesses.first().eliminatedCount,
-            )
+            ),
         )
     }
 }
