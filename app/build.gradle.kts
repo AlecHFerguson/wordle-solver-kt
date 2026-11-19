@@ -81,6 +81,9 @@ dependencies {
         implementation("org.xerial.snappy:snappy-java:1.1.10.12") {
             because("Fixes security vulnerability CVE-2026-93451")
         }
+        implementation("io.opentelemetry:opentelemetry-api:1.68.0") {
+            because("Fixes security vulnerability CVE-2026-118259")
+        }
     }
 }
 
