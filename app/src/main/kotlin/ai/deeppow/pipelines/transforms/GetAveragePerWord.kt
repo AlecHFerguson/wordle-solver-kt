@@ -7,7 +7,10 @@ import org.apache.beam.sdk.values.KV
 
 class GetAveragePerWord : DoFn<KV<String, Iterable<@JvmWildcard WordsEliminated>>, WordAverage>() {
     @ProcessElement
-    fun processElement(@Element element: KV<String, Iterable<@JvmWildcard WordsEliminated>>, context: ProcessContext) {
+    fun processElement(
+        @Element element: KV<String, Iterable<@JvmWildcard WordsEliminated>>,
+        context: ProcessContext,
+    ) {
         val average = element.value.average()
         context.output(WordAverage(guessWord = element.key, averageEliminated = average))
     }

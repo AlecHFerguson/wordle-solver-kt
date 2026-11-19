@@ -7,7 +7,10 @@ import java.io.File
 import java.nio.file.Paths
 
 object Avro {
-    inline fun <reified T : Any> T.writeToAvro(resourcesPath: String, fileName: String) {
+    inline fun <reified T : Any> T.writeToAvro(
+        resourcesPath: String,
+        fileName: String,
+    ) {
         val schema = ReflectData.get().getSchema(T::class.java)
         val writer = ReflectDatumWriter(T::class.java)
         val dataFileWriter = DataFileWriter(writer)

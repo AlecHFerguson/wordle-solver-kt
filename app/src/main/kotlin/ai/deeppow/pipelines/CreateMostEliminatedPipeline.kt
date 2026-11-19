@@ -21,20 +21,17 @@ object CreateMostEliminatedPipeline {
             .parDo(
                 name = "Create Test Guesses",
                 doFn = CreateTestGuesses(),
-            )
-            .parDo(
+            ).parDo(
                 name = "Get Words Eliminated",
                 doFn = GetWordsEliminated(),
-            )
-            .toKv(name = "KV by guessWord") { it.guessWord }
+            ).toKv(name = "KV by guessWord") { it.guessWord }
             .apply("Count Eliminated Per Word", Combine.perKey(CombineCountsPerWord()))
             .map { WordAverage(guessWord = it.key, averageEliminated = it.value) }
             .apply(
                 "Combine to Map",
-                Combine.globally(CombineWordsEliminatedMap())
-            )
-            .toAvro(
-                filePath = options.wordEliminatedPath
+                Combine.globally(CombineWordsEliminatedMap()),
+            ).toAvro(
+                filePath = options.wordEliminatedPath,
             )
 
         pipeline.run()

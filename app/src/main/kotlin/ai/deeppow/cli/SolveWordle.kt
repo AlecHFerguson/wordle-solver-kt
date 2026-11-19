@@ -37,20 +37,26 @@ object SolveWordle {
         throw WordleSolverException("No valid 5 letter word entered. Go back to kindergarten!")
     }
 
-    private fun printSummary(gameWord: String, solver: WordleSolver) {
+    private fun printSummary(
+        gameWord: String,
+        solver: WordleSolver,
+    ) {
         println("Solved $gameWord in ${solver.guesses.count()} tries. Guesses:")
         solver.guesses.forEach { printGuessSummary(it) }
     }
 
     private fun printGuessSummary(guess: GuessAnalysis) {
-        val resultStr = if (guess.guessResult.solved) {
-            "Wordle is solved!"
-        } else {
-            "Eliminated ${guess.eliminatedCount} guesses, ${guess.remainingCount} guesses remaining."
-        }
+        val resultStr =
+            if (guess.guessResult.solved) {
+                "Wordle is solved!"
+            } else {
+                "Eliminated ${guess.eliminatedCount} guesses, ${guess.remainingCount} guesses remaining."
+            }
         println("${guess.guessResult} => $resultStr")
         println("")
     }
 
-    class WordleSolverException(message: String) : Exception(message)
+    class WordleSolverException(
+        message: String,
+    ) : Exception(message)
 }

@@ -4,7 +4,7 @@ import java.io.Serializable
 
 data class LetterMap internal constructor(
     val letters: Map<Int, LettersForSlot> = initLetterMap(),
-    val requiredLetters: MutableMap<Char, Int> = mutableMapOf()
+    val requiredLetters: MutableMap<Char, Int> = mutableMapOf(),
 ) : Serializable {
     fun updateFromResult(letter: CharacterResult) {
         when (letter.result) {
@@ -16,15 +16,14 @@ data class LetterMap internal constructor(
                 letters[letter.guessIndex]!!.remove(letter.letter)
                 requiredLetters.put(letter.letter, 1)
             }
-            is NotPresent -> letters.values.forEach { charList ->
-                charList.remove(letter.letter)
-            }
+            is NotPresent ->
+                letters.values.forEach { charList ->
+                    charList.remove(letter.letter)
+                }
         }
     }
 
-    fun get(index: Int): LettersForSlot? {
-        return letters[index]
-    }
+    fun get(index: Int): LettersForSlot? = letters[index]
 
     fun getVarietyLetters(): Map<Char, Int> {
         val varietyColumns = letters.values.filterNot { it.solved }
@@ -45,7 +44,7 @@ data class LetterMap internal constructor(
         val newLetters = letters.deepCopy()
         return LetterMap(
             letters = newLetters,
-            requiredLetters = requiredLetters.toMutableMap()
+            requiredLetters = requiredLetters.toMutableMap(),
         )
     }
 
@@ -75,9 +74,7 @@ data class LettersForSlot internal constructor(
 
     fun contains(char: Char): Boolean = letters.contains(char)
 
-    fun copy(): LettersForSlot {
-        return LettersForSlot(letters.toMutableMap())
-    }
+    fun copy(): LettersForSlot = LettersForSlot(letters.toMutableMap())
 }
 
 private fun initLetterMap(): Map<Int, LettersForSlot> {

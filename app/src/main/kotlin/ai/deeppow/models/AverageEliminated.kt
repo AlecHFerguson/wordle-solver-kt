@@ -6,26 +6,25 @@ import java.io.File
 import java.io.Serializable
 
 data class AverageEliminated(
-    val words: MutableMap<String, Double> = mutableMapOf()
+    val words: MutableMap<String, Double> = mutableMapOf(),
 ) : Serializable {
-    fun get(word: String): Double? {
-        return words[word]
-    }
+    fun get(word: String): Double? = words[word]
 
     companion object Reader {
-        private const val averageEliminatedFile = "/average-eliminated.avro"
+        private const val AVERAGE_ELIMINATED_FILE = "/average-eliminated.avro"
 
         fun read(): AverageEliminated {
-            val wordTreeResource = AverageEliminated::class.java.getResource(averageEliminatedFile)?.toURI()
-                ?: throw IllegalArgumentException(
-                    "$averageEliminatedFile not found in resources"
-                )
+            val wordTreeResource =
+                AverageEliminated::class.java.getResource(AVERAGE_ELIMINATED_FILE)?.toURI()
+                    ?: throw IllegalArgumentException(
+                        "$AVERAGE_ELIMINATED_FILE not found in resources",
+                    )
             val reader = ReflectDatumReader(AverageEliminated::class.java)
             val fileReader = DataFileReader(File(wordTreeResource), reader)
             while (fileReader.hasNext()) {
                 return fileReader.next()
             }
-            throw IllegalArgumentException("No WordTree found in file $wordTreeFile")
+            throw IllegalArgumentException("No WordTree found in file $WORD_TREE_FILE")
         }
     }
 }
