@@ -167,3 +167,19 @@ I need to create a command line interface. Also, users should be able to play th
 At present the game uses all 14,855 guessable words. This includes a ton which you've probably never seen -- Can you
 use `syver` in a sentence?? More importantly, it's too many possibilities for 6 guesses. I think that by narrowing
 down to common words, the solver will be able to solve nearly all within 6 guesses. For future work.
+
+## Upgrading Vulnerable Dependencies
+This repo has osv-scanner configured via Gradle. To scan for vulnerable packages, first generate a Gradle lockfile:
+
+```shell
+./gradlew :app:dependencies --write-locks
+```
+
+Then, run the scanner.
+
+```shell
+./gradlew osvScan
+```
+
+If vulnerabilities are found they are written to a JSON file; refer to the output for locations of the file. Use
+this file to identify dependencies on which to put constraints.
