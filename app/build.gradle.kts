@@ -54,7 +54,6 @@ configurations {
 dependencies {
     val coroutinesVersion = "1.6.4"
     val beamVersion = "2.77.0"
-    val jacksonVersion = "2.22.4"
 
     // Align versions of all Kotlin components
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
@@ -75,7 +74,7 @@ dependencies {
     testImplementation(kotlin("test"))
 
     constraints {
-        implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion") {
+        implementation("com.fasterxml.jackson.core:jackson-core:2.22.4") {
             because("Fixes security vulnerability CVE-2026-89425")
         }
         implementation("org.xerial.snappy:snappy-java:1.1.10.12") {
